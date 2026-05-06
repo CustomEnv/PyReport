@@ -45,6 +45,9 @@ jobs:
           uv run python scripts/generate_demo.py \
             --output "reports/${RUN_ID}/demo"
 
+      - name: Prepare artifact
+        run: touch reports/.nojekyll
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
