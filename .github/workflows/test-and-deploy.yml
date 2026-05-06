@@ -45,13 +45,16 @@ jobs:
           uv run python scripts/generate_demo.py \
             --output "reports/${RUN_ID}/demo"
 
-      - name: Prepare artifact
-        run: touch reports/.nojekyll
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _site/reports/${{ github.run_id }}
+          cp -r reports/${{ github.run_id }}/* _site/reports/${{ github.run_id }}/
+          touch _site/.nojekyll
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: reports
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
@@ -75,7 +78,7 @@ jobs:
               issue_number: context.issue.number,
             });
             for (const comment of comments) {
-              if (comment.user.type === 'Bot' && comment.body?.startsWith('## PyReport')) {
+              if (comment.body?.startsWith('## PyReport')) {
                 await github.rest.issues.deleteComment({
                   ...repo,
                   comment_id: comment.id,
