@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PyReport — Test History</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        pass: { DEFAULT: '#22c55e', bg: '#052e16', border: '#166534' },
+        fail: { DEFAULT: '#ef4444', bg: '#450a0a', border: '#991b1b' },
+        skip: { DEFAULT: '#eab308', bg: '#422006', border: '#854d0e' },
+        broken: { DEFAULT: '#a855f7', bg: '#3b0764', border: '#7e22ce' },
+      }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .chart-container { position: relative; height: 200px; max-height: 200px; }
+  .status-passed { @apply text-pass; }
+  .status-failed { @apply text-fail; }
+  .status-skipped { @apply text-skip; }
+  .status-broken { @apply text-broken; }
+  .badge-passed { background-color: #16a34a; color: #fff; }
+  .badge-failed { background-color: #dc2626; color: #fff; }
+  .badge-broken { background-color: #ca8a04; color: #fff; }
+  .badge-skipped { background-color: #6b7280; color: #fff; }
+  .bg-gray-750 { background-color: #2d2d3a; }
+  .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1a1a2e; }
+  ::-webkit-scrollbar-thumb { background: #4a4a5a; border-radius: 3px; }
+  .flaky-high { color: #ef4444; }
+  .flaky-mid { color: #eab308; }
+  .flaky-low { color: #22c55e; }
+  .trend-up { color: #ef4444; }
+  .trend-down { color: #22c55e; }
+</style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+
+<div class="max-w-6xl mx-auto p-6">
+  <!-- Header -->
+  <div class="bg-gray-800 rounded-lg p-5 mb-6 border border-gray-700">
+    <h1 class="text-xl font-bold">Test History</h1>
+    <p class="text-sm text-gray-400 mt-1">1 run(s) · flaky detection · duration trends</p>
+  </div>
+
+  <!-- Timeline section -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Run Timeline</h2>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
+            <th class="py-2 px-3">Run</th>
+            <th class="py-2 px-3">Date</th>
+            <th class="py-2 px-3 text-center">Total</th>
+            <th class="py-2 px-3 text-center">Passed</th>
+            <th class="py-2 px-3 text-center">Failed</th>
+            <th class="py-2 px-3 text-center">Skipped</th>
+            <th class="py-2 px-3 text-center">Broken</th>
+            <th class="py-2 px-3 text-right">Pass Rate</th>
+            <th class="py-2 px-3 text-right">Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 font-mono text-xs text-gray-300">20260506205104</td>
+            <td class="py-2 px-3 text-xs text-gray-400">2026-05-06T20:51:04</td>
+            <td class="py-2 px-3 text-center">108</td>
+            <td class="py-2 px-3 text-center text-pass">108</td>
+            <td class="py-2 px-3 text-center text-fail">0</td>
+            <td class="py-2 px-3 text-center text-skip">0</td>
+            <td class="py-2 px-3 text-center text-broken">0</td>
+            <td class="py-2 px-3 text-right">100.0%</td>
+            <td class="py-2 px-3 text-right text-gray-400">0.931s</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+
+  
+
+  <!-- Flaky tests -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Flaky Tests</h2>
+    
+    <p class="text-gray-500 text-sm">No flaky tests detected (need at least 3 runs with status changes).</p>
+    
+  </div>
+
+  <!-- Duration trends -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Duration Trends</h2>
+    
+    <p class="text-gray-500 text-sm">Not enough data for trends (need at least 2 runs).</p>
+    
+  </div>
+
+  <!-- Slowest tests -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Slowest Tests (Latest Run)</h2>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
+            <th class="py-2 px-3">Test</th>
+            <th class="py-2 px-3 text-right">Duration</th>
+            <th class="py-2 px-3 text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_merge_no_inputs</td>
+            <td class="py-2 px-3 text-right text-xs">0.1769746399999974s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_pytest_plugin_generates_html</td>
+            <td class="py-2 px-3 text-right text-xs">0.048295127000002935s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_cli_generate_from_plugin_output</td>
+            <td class="py-2 px-3 text-right text-xs">0.03529163299999993s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_rich_report_with_all_features</td>
+            <td class="py-2 px-3 text-right text-xs">0.03394251799998926s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_generates_report_with_results</td>
+            <td class="py-2 px-3 text-right text-xs">0.033351256000003104s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+const RUNS = [{"id": "20260506205104", "timestamp": "2026-05-06T20:51:04.989422", "total": 108, "passed": 108, "failed": 0, "broken": 0, "skipped": 0, "pass_rate": 100.0, "duration": 0.931}];
+const FLAKY = [];
+const TRENDS = [];
+
+// Pass rate & duration charts
+if (RUNS.length > 1) {
+  const labels = RUNS.map(r => (r.timestamp || r.id).slice(0, 10)).reverse();
+  const passRates = RUNS.map(r => r.pass_rate).reverse();
+  const durations = RUNS.map(r => r.duration).reverse();
+
+  new Chart(document.getElementById('pass-rate-chart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pass Rate (%)',
+        data: passRates,
+        borderColor: '#22c55e',
+        backgroundColor: 'rgba(34,197,94,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+        x: { grid: { display: false }, ticks: { color: '#9ca3af', maxTicksLimit: 10 } },
+      }
+    }
+  });
+
+  new Chart(document.getElementById('duration-chart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Duration (s)',
+        data: durations,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+        x: { grid: { display: false }, ticks: { color: '#9ca3af', maxTicksLimit: 10 } },
+      }
+    }
+  });
+}
+
+// Sparkline rendering for individual test duration trends
+document.querySelectorAll('.trend-sparkline').forEach(canvas => {
+  const raw = canvas.dataset.values;
+  if (!raw) return;
+  const values = raw.split(',').map(Number);
+  if (values.length < 2) return;
+
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = max - min || 1;
+  const stepX = w / (values.length - 1);
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.beginPath();
+  values.forEach((v, i) => {
+    const x = i * stepX;
+    const y = h - ((v - min) / range) * (h - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = values[values.length - 1] > values[0] ? '#ef4444' : '#22c55e';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+});
+</script>
+</body>
+</html>

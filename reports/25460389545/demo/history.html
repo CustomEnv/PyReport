@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PyReport — Test History</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        pass: { DEFAULT: '#22c55e', bg: '#052e16', border: '#166534' },
+        fail: { DEFAULT: '#ef4444', bg: '#450a0a', border: '#991b1b' },
+        skip: { DEFAULT: '#eab308', bg: '#422006', border: '#854d0e' },
+        broken: { DEFAULT: '#a855f7', bg: '#3b0764', border: '#7e22ce' },
+      }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .chart-container { position: relative; height: 200px; max-height: 200px; }
+  .status-passed { @apply text-pass; }
+  .status-failed { @apply text-fail; }
+  .status-skipped { @apply text-skip; }
+  .status-broken { @apply text-broken; }
+  .badge-passed { background-color: #16a34a; color: #fff; }
+  .badge-failed { background-color: #dc2626; color: #fff; }
+  .badge-broken { background-color: #ca8a04; color: #fff; }
+  .badge-skipped { background-color: #6b7280; color: #fff; }
+  .bg-gray-750 { background-color: #2d2d3a; }
+  .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1a1a2e; }
+  ::-webkit-scrollbar-thumb { background: #4a4a5a; border-radius: 3px; }
+  .flaky-high { color: #ef4444; }
+  .flaky-mid { color: #eab308; }
+  .flaky-low { color: #22c55e; }
+  .trend-up { color: #ef4444; }
+  .trend-down { color: #22c55e; }
+</style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+
+<div class="max-w-6xl mx-auto p-6">
+  <!-- Header -->
+  <div class="bg-gray-800 rounded-lg p-5 mb-6 border border-gray-700">
+    <h1 class="text-xl font-bold">Test History</h1>
+    <p class="text-sm text-gray-400 mt-1">3 run(s) · flaky detection · duration trends</p>
+  </div>
+
+  <!-- Timeline section -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Run Timeline</h2>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
+            <th class="py-2 px-3">Run</th>
+            <th class="py-2 px-3">Date</th>
+            <th class="py-2 px-3 text-center">Total</th>
+            <th class="py-2 px-3 text-center">Passed</th>
+            <th class="py-2 px-3 text-center">Failed</th>
+            <th class="py-2 px-3 text-center">Skipped</th>
+            <th class="py-2 px-3 text-center">Broken</th>
+            <th class="py-2 px-3 text-right">Pass Rate</th>
+            <th class="py-2 px-3 text-right">Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 font-mono text-xs text-gray-300">demo-003</td>
+            <td class="py-2 px-3 text-xs text-gray-400">2026-05-04T14:00:00</td>
+            <td class="py-2 px-3 text-center">11</td>
+            <td class="py-2 px-3 text-center text-pass">7</td>
+            <td class="py-2 px-3 text-center text-fail">3</td>
+            <td class="py-2 px-3 text-center text-skip">1</td>
+            <td class="py-2 px-3 text-center text-broken">0</td>
+            <td class="py-2 px-3 text-right">63.6%</td>
+            <td class="py-2 px-3 text-right text-gray-400">6.7s</td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 font-mono text-xs text-gray-300">demo-002</td>
+            <td class="py-2 px-3 text-xs text-gray-400">2026-05-04T12:00:00</td>
+            <td class="py-2 px-3 text-center">11</td>
+            <td class="py-2 px-3 text-center text-pass">8</td>
+            <td class="py-2 px-3 text-center text-fail">2</td>
+            <td class="py-2 px-3 text-center text-skip">1</td>
+            <td class="py-2 px-3 text-center text-broken">0</td>
+            <td class="py-2 px-3 text-right">72.7%</td>
+            <td class="py-2 px-3 text-right text-gray-400">5.9s</td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 font-mono text-xs text-gray-300">demo-001</td>
+            <td class="py-2 px-3 text-xs text-gray-400">2026-05-04T10:00:00</td>
+            <td class="py-2 px-3 text-center">11</td>
+            <td class="py-2 px-3 text-center text-pass">7</td>
+            <td class="py-2 px-3 text-center text-fail">2</td>
+            <td class="py-2 px-3 text-center text-skip">1</td>
+            <td class="py-2 px-3 text-center text-broken">1</td>
+            <td class="py-2 px-3 text-right">63.6%</td>
+            <td class="py-2 px-3 text-right text-gray-400">5.2s</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+
+  
+  <!-- Summary chart -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-gray-800 rounded-lg border border-gray-700 p-5">
+      <h2 class="text-sm font-semibold text-gray-300 mb-3">Pass Rate Over Time</h2>
+      <div class="chart-container"><canvas id="pass-rate-chart"></canvas></div>
+    </div>
+    <div class="bg-gray-800 rounded-lg border border-gray-700 p-5">
+      <h2 class="text-sm font-semibold text-gray-300 mb-3">Duration Over Time</h2>
+      <div class="chart-container"><canvas id="duration-chart"></canvas></div>
+    </div>
+  </div>
+  
+
+  <!-- Flaky tests -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Flaky Tests</h2>
+    
+    <p class="text-xs text-gray-400 mb-3">10 test(s) with status changes across runs.</p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
+            <th class="py-2 px-3">Test</th>
+            <th class="py-2 px-3">Suite</th>
+            <th class="py-2 px-3 text-center">Runs</th>
+            <th class="py-2 px-3 text-center">Flaky Score</th>
+            <th class="py-2 px-3 text-center">Changes</th>
+            <th class="py-2 px-3">Status History</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_unauthorized</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_auth.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-high font-bold">1.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">2</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-failed bg-current" title="failed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-failed bg-current" title="failed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_cancel_order</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_orders.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-mid font-bold">0.5</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">1</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-failed bg-current" title="failed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-failed bg-current" title="failed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-broken bg-current" title="broken"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_get_users</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_api.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_create_user</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_api.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_delete_user</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_api.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-failed bg-current" title="failed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-failed bg-current" title="failed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-failed bg-current" title="failed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_login</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_auth.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_screenshot</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_ui.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_form_submit</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_ui.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_dashboard</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_ui.py</td>
+            <td class="py-2 px-3 text-center text-xs">3</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-skipped bg-current" title="skipped"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-skipped bg-current" title="skipped"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-skipped bg-current" title="skipped"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_create_order</td>
+            <td class="py-2 px-3 text-xs text-gray-400">test_orders.py</td>
+            <td class="py-2 px-3 text-center text-xs">6</td>
+            <td class="py-2 px-3 text-center">
+              
+              <span class="flaky-low">0.0</span>
+              
+            </td>
+            <td class="py-2 px-3 text-center text-xs">0</td>
+            <td class="py-2 px-3">
+              <div class="flex gap-1">
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+                <span class="w-2 h-2 rounded-full inline-block status-passed bg-current" title="passed"></span>
+                
+              </div>
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+
+  <!-- Duration trends -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Duration Trends</h2>
+    
+    <p class="text-xs text-gray-400 mb-3">Top 10 tests by latest duration.</p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
+            <th class="py-2 px-3">Test</th>
+            <th class="py-2 px-3 text-right">Latest</th>
+            <th class="py-2 px-3 text-right">Avg</th>
+            <th class="py-2 px-3 text-right">Max</th>
+            <th class="py-2 px-3 text-right">Change</th>
+            <th class="py-2 px-3">Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_screenshot</td>
+            <td class="py-2 px-3 text-right text-xs">2.5s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">1.833s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">2.5s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="trend-up">+108.3%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="2.5,1.8,1.2"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_form_submit</td>
+            <td class="py-2 px-3 text-right text-xs">0.8s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.8s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.8s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="text-gray-400">0.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.8,0.8,0.8"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_create_user</td>
+            <td class="py-2 px-3 text-right text-xs">0.7s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.6s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.7s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="trend-up">+40.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.7,0.6,0.5"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_create_order</td>
+            <td class="py-2 px-3 text-right text-xs">0.6s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.55s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.6s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="trend-up">+20.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.6,0.5,0.6,0.5,0.6,0.5"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_delete_user</td>
+            <td class="py-2 px-3 text-right text-xs">0.4s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.4s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.4s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="text-gray-400">0.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.4,0.4,0.4"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_cancel_order</td>
+            <td class="py-2 px-3 text-right text-xs">0.4s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.4s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.4s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="text-gray-400">0.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.4,0.4,0.4"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_get_users</td>
+            <td class="py-2 px-3 text-right text-xs">0.3s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.3s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.3s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="text-gray-400">0.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.3,0.3,0.3"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_unauthorized</td>
+            <td class="py-2 px-3 text-right text-xs">0.3s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.3s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.3s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="text-gray-400">0.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.3,0.3,0.3"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_login</td>
+            <td class="py-2 px-3 text-right text-xs">0.2s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.2s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.2s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+                
+                <span class="text-gray-400">0.0%</span>
+                
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.2,0.2,0.2"></canvas>
+              
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_dashboard</td>
+            <td class="py-2 px-3 text-right text-xs">0.0s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.0s</td>
+            <td class="py-2 px-3 text-right text-xs text-gray-400">0.0s</td>
+            <td class="py-2 px-3 text-right text-xs">
+              
+              <span class="text-gray-600">—</span>
+              
+            </td>
+            <td class="py-2 px-3">
+              
+              <canvas class="trend-sparkline" width="80" height="24"
+                      data-values="0.0,0.0,0.0"></canvas>
+              
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+
+  <!-- Slowest tests -->
+  <div class="bg-gray-800 rounded-lg border border-gray-700 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Slowest Tests (Latest Run)</h2>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
+            <th class="py-2 px-3">Test</th>
+            <th class="py-2 px-3 text-right">Duration</th>
+            <th class="py-2 px-3 text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_screenshot</td>
+            <td class="py-2 px-3 text-right text-xs">2.5s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_form_submit</td>
+            <td class="py-2 px-3 text-right text-xs">0.8s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_create_user</td>
+            <td class="py-2 px-3 text-right text-xs">0.7s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_create_order</td>
+            <td class="py-2 px-3 text-right text-xs">0.6s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+          <tr class="border-b border-gray-700 hover:bg-gray-750">
+            <td class="py-2 px-3 text-xs font-mono text-gray-200">test_create_order</td>
+            <td class="py-2 px-3 text-right text-xs">0.5s</td>
+            <td class="py-2 px-3 text-center">
+              <span class="badge-passed text-xs px-2 py-0.5 rounded">passed</span>
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+const RUNS = [{"id": "demo-003", "timestamp": "2026-05-04T14:00:00", "total": 11, "passed": 7, "failed": 3, "broken": 0, "skipped": 1, "pass_rate": 63.6, "duration": 6.7}, {"id": "demo-002", "timestamp": "2026-05-04T12:00:00", "total": 11, "passed": 8, "failed": 2, "broken": 0, "skipped": 1, "pass_rate": 72.7, "duration": 5.9}, {"id": "demo-001", "timestamp": "2026-05-04T10:00:00", "total": 11, "passed": 7, "failed": 2, "broken": 1, "skipped": 1, "pass_rate": 63.6, "duration": 5.2}];
+const FLAKY = [{"test_id": "tests/test_auth.py::test_unauthorized", "name": "test_unauthorized", "suite": "tests/test_auth.py", "total_runs": 3, "flaky_score": 1.0, "status_changes": 2, "statuses": ["failed", "passed", "failed"]}, {"test_id": "tests/test_orders.py::test_cancel_order", "name": "test_cancel_order", "suite": "tests/test_orders.py", "total_runs": 3, "flaky_score": 0.5, "status_changes": 1, "statuses": ["failed", "failed", "broken"]}, {"test_id": "tests/test_api.py::test_get_users", "name": "test_get_users", "suite": "tests/test_api.py", "total_runs": 3, "flaky_score": 0.0, "status_changes": 0, "statuses": ["passed", "passed", "passed"]}, {"test_id": "tests/test_api.py::test_create_user", "name": "test_create_user", "suite": "tests/test_api.py", "total_runs": 3, "flaky_score": 0.0, "status_changes": 0, "statuses": ["passed", "passed", "passed"]}, {"test_id": "tests/test_api.py::test_delete_user", "name": "test_delete_user", "suite": "tests/test_api.py", "total_runs": 3, "flaky_score": 0.0, "status_changes": 0, "statuses": ["failed", "failed", "failed"]}, {"test_id": "tests/test_auth.py::test_login", "name": "test_login", "suite": "tests/test_auth.py", "total_runs": 3, "flaky_score": 0.0, "status_changes": 0, "statuses": ["passed", "passed", "passed"]}, {"test_id": "tests/test_ui.py::test_screenshot", "name": "test_screenshot", "suite": "tests/test_ui.py", "total_runs": 3, "flaky_score": 0.0, "status_changes": 0, "statuses": ["passed", "passed", "passed"]}, {"test_id": "tests/test_ui.py::test_form_submit", "name": "test_form_submit", "suite": "tests/test_ui.py", "total_runs": 3, "flaky_score": 0.0, "status_changes": 0, "statuses": ["passed", "passed", "passed"]}, {"test_id": "tests/test_ui.py::test_dashboard", "name": "test_dashboard", "suite": "tests/test_ui.py", "total_runs": 3, "flaky_score": 0.0, "status_changes": 0, "statuses": ["skipped", "skipped", "skipped"]}, {"test_id": "tests/test_orders.py::test_create_order", "name": "test_create_order", "suite": "tests/test_orders.py", "total_runs": 6, "flaky_score": 0.0, "status_changes": 0, "statuses": ["passed", "passed", "passed", "passed", "passed", "passed"]}];
+const TRENDS = [{"test_id": "tests/test_ui.py::test_screenshot", "name": "test_screenshot", "suite": "tests/test_ui.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 2.5}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 1.8}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 1.2}], "change_pct": 108.3, "avg_duration": 1.833, "max_duration": 2.5, "latest_duration": 2.5}, {"test_id": "tests/test_ui.py::test_form_submit", "name": "test_form_submit", "suite": "tests/test_ui.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.8}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.8}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.8}], "change_pct": 0.0, "avg_duration": 0.8, "max_duration": 0.8, "latest_duration": 0.8}, {"test_id": "tests/test_api.py::test_create_user", "name": "test_create_user", "suite": "tests/test_api.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.7}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.6}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.5}], "change_pct": 40.0, "avg_duration": 0.6, "max_duration": 0.7, "latest_duration": 0.7}, {"test_id": "tests/test_orders.py::test_create_order", "name": "test_create_order", "suite": "tests/test_orders.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.6}, {"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.5}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.6}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.5}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.6}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.5}], "change_pct": 20.0, "avg_duration": 0.55, "max_duration": 0.6, "latest_duration": 0.6}, {"test_id": "tests/test_api.py::test_delete_user", "name": "test_delete_user", "suite": "tests/test_api.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.4}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.4}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.4}], "change_pct": 0.0, "avg_duration": 0.4, "max_duration": 0.4, "latest_duration": 0.4}, {"test_id": "tests/test_orders.py::test_cancel_order", "name": "test_cancel_order", "suite": "tests/test_orders.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.4}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.4}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.4}], "change_pct": 0.0, "avg_duration": 0.4, "max_duration": 0.4, "latest_duration": 0.4}, {"test_id": "tests/test_api.py::test_get_users", "name": "test_get_users", "suite": "tests/test_api.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.3}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.3}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.3}], "change_pct": 0.0, "avg_duration": 0.3, "max_duration": 0.3, "latest_duration": 0.3}, {"test_id": "tests/test_auth.py::test_unauthorized", "name": "test_unauthorized", "suite": "tests/test_auth.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.3}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.3}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.3}], "change_pct": 0.0, "avg_duration": 0.3, "max_duration": 0.3, "latest_duration": 0.3}, {"test_id": "tests/test_auth.py::test_login", "name": "test_login", "suite": "tests/test_auth.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.2}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.2}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.2}], "change_pct": 0.0, "avg_duration": 0.2, "max_duration": 0.2, "latest_duration": 0.2}, {"test_id": "tests/test_ui.py::test_dashboard", "name": "test_dashboard", "suite": "tests/test_ui.py", "points": [{"run_id": "demo-003", "timestamp": "2026-05-06T20:51:05.346245", "duration": 0.0}, {"run_id": "demo-002", "timestamp": "2026-05-06T20:51:05.346341", "duration": 0.0}, {"run_id": "demo-001", "timestamp": "2026-05-06T20:51:05.346468", "duration": 0.0}], "change_pct": null, "avg_duration": 0.0, "max_duration": 0.0, "latest_duration": 0.0}];
+
+// Pass rate & duration charts
+if (RUNS.length > 1) {
+  const labels = RUNS.map(r => (r.timestamp || r.id).slice(0, 10)).reverse();
+  const passRates = RUNS.map(r => r.pass_rate).reverse();
+  const durations = RUNS.map(r => r.duration).reverse();
+
+  new Chart(document.getElementById('pass-rate-chart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pass Rate (%)',
+        data: passRates,
+        borderColor: '#22c55e',
+        backgroundColor: 'rgba(34,197,94,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+        x: { grid: { display: false }, ticks: { color: '#9ca3af', maxTicksLimit: 10 } },
+      }
+    }
+  });
+
+  new Chart(document.getElementById('duration-chart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Duration (s)',
+        data: durations,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+        x: { grid: { display: false }, ticks: { color: '#9ca3af', maxTicksLimit: 10 } },
+      }
+    }
+  });
+}
+
+// Sparkline rendering for individual test duration trends
+document.querySelectorAll('.trend-sparkline').forEach(canvas => {
+  const raw = canvas.dataset.values;
+  if (!raw) return;
+  const values = raw.split(',').map(Number);
+  if (values.length < 2) return;
+
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = max - min || 1;
+  const stepX = w / (values.length - 1);
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.beginPath();
+  values.forEach((v, i) => {
+    const x = i * stepX;
+    const y = h - ((v - min) / range) * (h - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = values[values.length - 1] > values[0] ? '#ef4444' : '#22c55e';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "20260506205104",
+    "timestamp": "2026-05-06T20:51:04.989422",
+    "total": 108,
+    "passed": 108,
+    "failed": 0,
+    "broken": 0,
+    "skipped": 0,
+    "pass_rate": 100.0,
+    "duration": 0.931
+  },
+  {
+    "id": "20260506204400",
+    "timestamp": "2026-05-06T20:44:00.707754",
+    "total": 108,
+    "passed": 108,
+    "failed": 0,
+    "broken": 0,
+    "skipped": 0,
+    "pass_rate": 100.0,
+    "duration": 1.067
+  },
+  {
+    "id": "20260506203948",
+    "timestamp": "2026-05-06T20:39:48.125340",
+    "total": 108,
+    "passed": 108,
+    "failed": 0,
+    "broken": 0,
+    "skipped": 0,
+    "pass_rate": 100.0,
+    "duration": 1.002
+  },
+  {
+    "id": "demo-003",
+    "timestamp": "2026-05-04T14:00:00",
+    "total": 11,
+    "passed": 7,
+    "failed": 3,
+    "broken": 0,
+    "skipped": 1,
+    "pass_rate": 63.6,
+    "duration": 6.7
+  },
+  {
+    "id": "demo-002",
+    "timestamp": "2026-05-04T12:00:00",
+    "total": 11,
+    "passed": 8,
+    "failed": 2,
+    "broken": 0,
+    "skipped": 1,
+    "pass_rate": 72.7,
+    "duration": 5.9
+  },
+  {
+    "id": "demo-001",
+    "timestamp": "2026-05-04T10:00:00",
+    "total": 11,
+    "passed": 7,
+    "failed": 2,
+    "broken": 1,
+    "skipped": 1,
+    "pass_rate": 63.6,
+    "duration": 5.2
+  }
+]
