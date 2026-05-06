@@ -137,12 +137,13 @@ class TestHistory:
         assert "Error" in result.output
 
     def test_history_no_history_data(self, tmp_path: Path) -> None:
-        # Directory exists but has no .pyreport_history
+        # Directory exists but has no .pyreport_history → generates empty page
         out_dir = tmp_path / "output"
         out_dir.mkdir(parents=True)
-        result = runner.invoke(app, ["history", str(out_dir)])
-        assert result.exit_code != 0
-        assert "no history" in result.output.lower()
+        hist_out = tmp_path / "hist"
+        result = runner.invoke(app, ["history", str(out_dir), "-o", str(hist_out)])
+        assert result.exit_code == 0
+        assert hist_out.exists()
 
     def test_history_with_data(self, tmp_path: Path) -> None:
         # Setup: create a report and history

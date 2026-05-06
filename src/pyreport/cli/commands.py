@@ -438,16 +438,26 @@ def history(
     # Discover the history directory — look for .pyreport_history/ subdir or reports_dir itself
     history_path = reports_path / ".pyreport_history"
     if not history_path.is_dir():
-        # Maybe reports_dir is the output dir and history is in it
-        typer.echo(f"Error: no history found in {reports_path}", err=True)
-        typer.echo("Run pytest with --pyreport at least twice to build history.", err=True)
-        raise typer.Exit(code=1)
+        typer.echo(
+            f"Warning: no history found in {reports_path}. "
+            "Generating empty history page.",
+            err=True,
+        )
+        renderer = HTMLRenderer()
+        out = Path(output_dir)
+        history_index = renderer.render_history(output_dir=out)
+        typer.echo(f"History report generated (empty): {history_index}")
+        raise typer.Exit()
 
     store = HistoryStore(history_path)
     runs = store.list_runs()
     if not runs:
-        typer.echo("No runs found in history.", err=True)
-        raise typer.Exit(code=1)
+        typer.echo("Warning: no runs found in history. Generating empty history page.", err=True)
+        renderer = HTMLRenderer()
+        out = Path(output_dir)
+        history_index = renderer.render_history(output_dir=out)
+        typer.echo(f"History report generated (empty): {history_index}")
+        raise typer.Exit()
 
     typer.echo(f"Found {len(runs)} run(s) in history.")
 

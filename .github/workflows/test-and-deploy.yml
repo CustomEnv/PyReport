@@ -52,6 +52,13 @@ jobs:
             --pyreport-output "_site/reports/${{ github.run_id }}/test-report" \
             --tb=short
 
+      - name: Generate history page for test report
+        continue-on-error: true
+        run: |
+          uv run python -m pyreport history \
+            "_site/reports/${{ github.run_id }}/test-report" \
+            -o "_site/reports/${{ github.run_id }}/test-report"
+
       - name: Restore demo history
         run: |
           mkdir -p "_site/reports/${{ github.run_id }}/demo"
