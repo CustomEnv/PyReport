@@ -43,6 +43,15 @@ jobs:
           uv run python scripts/generate_demo.py \
             --output "_site/reports/${{ github.run_id }}/demo"
 
+      - name: Save run metadata
+        run: |
+          printf '{"pr":%s,"run":%s,"repo":"%s","ts":"%s"}\n' \
+            "${{ github.event.pull_request.number }}" \
+            "${{ github.run_id }}" \
+            "${{ github.repository }}" \
+            "$(date -u +%Y-%m-%dT%H:%M:%S)" \
+            > "_site/reports/${{ github.run_id }}/.meta.json"
+
       - name: Checkout existing gh-pages
         continue-on-error: true
         uses: actions/checkout@v4

@@ -190,29 +190,74 @@ def serve(
 # ── deploy ─────────────────────────────────────────────────────────────────
 
 
-def _discover_runs(reports_dir: Path) -> list[tuple[str, float, bool, bool]]:
-    """Return sorted (run_id, mtime, has_demo, has_tests) list, newest first."""
+def _discover_runs(
+    reports_dir: Path,
+) -> list[tuple[str, str, bool, bool, int | None, str | None, str | None]]:
+    """Return sorted (run_id, ts, has_demo, has_tests, pr, repo, run) list."""
     if not reports_dir.is_dir():
         return []
-    runs: list[tuple[str, float, bool, bool]] = []
+    runs: list[tuple[str, str, bool, bool, int | None, str | None, str | None]] = []
     for child in sorted(reports_dir.iterdir()):
         if not child.is_dir():
             continue
         demo = (child / "demo" / "index.html").is_file()
         tests = (child / "test-report" / "index.html").is_file()
-        if demo or tests:
-            runs.append((child.name, child.stat().st_mtime, demo, tests))
+        if not (demo or tests):
+            continue
+
+        meta_file = child / ".meta.json"
+        pr: int | None = None
+        repo: str | None = None
+        run: str | None = None
+        ts: str | None = None
+        if meta_file.is_file():
+            try:
+                meta = json.loads(meta_file.read_text())
+                pr = meta.get("pr")
+                repo = meta.get("repo")
+                run = str(meta["run"]) if "run" in meta else None
+                raw_ts = meta.get("ts")
+                if raw_ts:
+                    ts = raw_ts
+            except Exception:
+                pass
+
+        if not ts:
+            ts = datetime.fromtimestamp(
+                child.stat().st_mtime, tz=timezone.utc
+            ).strftime("%Y-%m-%d %H:%M UTC")
+
+        runs.append((child.name, ts, demo, tests, pr, repo, run))
     runs.sort(key=lambda r: r[1], reverse=True)
     return runs
 
 
-def _generate_index(runs: list[tuple[str, float, bool, bool]]) -> str:
+def _generate_index(
+    runs: list[tuple[str, str, bool, bool, int | None, str | None, str | None]],
+) -> str:
     rows: list[str] = []
-    for run_id, mtime, has_demo, has_tests in runs:
-        ts = datetime.fromtimestamp(mtime, tz=timezone.utc).strftime(
-            "%Y-%m-%d %H:%M UTC"
-        )
+    for run_id, ts, has_demo, has_tests, pr, repo, run in runs:
         link = "class='text-blue-400 hover:text-blue-300'"
+
+        pr_cell: str
+        if pr and repo:
+            pr_cell = f"<a href='https://github.com/{repo}/pull/{pr}' {link}>#{pr}</a>"
+        elif pr:
+            pr_cell = f"#{pr}"
+        else:
+            pr_cell = "<span class='text-gray-500'>\u2014</span>"
+
+        run_cell: str
+        if run and repo:
+            run_cell = (
+                f"<a href='https://github.com/{repo}/actions/runs/{run}' {link}>"
+                f"{run}</a>"
+            )
+        elif run:
+            run_cell = run
+        else:
+            run_cell = "<span class='text-gray-500'>\u2014</span>"
+
         if has_demo:
             demo = f"<a href='reports/{run_id}/demo/' {link}>demo</a>"
         else:
@@ -221,10 +266,13 @@ def _generate_index(runs: list[tuple[str, float, bool, bool]]) -> str:
             tests = f"<a href='reports/{run_id}/test-report/' {link}>tests</a>"
         else:
             tests = "<span class='text-gray-600'>\u2014</span>"
+
         rows.append(
             f"<tr class='border-b border-gray-700 hover:bg-gray-750'>"
             f"<td class='py-2 px-3 font-mono text-sm'>{run_id}</td>"
             f"<td class='py-2 px-3 text-sm text-gray-400'>{ts}</td>"
+            f"<td class='py-2 px-3'>{pr_cell}</td>"
+            f"<td class='py-2 px-3 font-mono text-sm'>{run_cell}</td>"
             f"<td class='py-2 px-3'>{demo}</td>"
             f"<td class='py-2 px-3'>{tests}</td>"
             f"</tr>"
@@ -255,6 +303,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
                  border-b border-gray-700">
           <th class="py-3 px-3">Run</th>
           <th class="py-3 px-3">Date</th>
+          <th class="py-3 px-3">PR</th>
+          <th class="py-3 px-3">Actions</th>
           <th class="py-3 px-3">Demo</th>
           <th class="py-3 px-3">Tests</th>
         </tr>
