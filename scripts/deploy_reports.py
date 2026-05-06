@@ -38,7 +38,8 @@ def _generate_index(runs: list[tuple[str, float, bool, bool]]) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PyReport — test runs</title>
 <style>
-body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;background:#0f172a;color:#e2e8f0}
+body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}
+body{background:#0f172a;color:#e2e8f0}
 a{color:#60a5fa}
 table{width:100%;border-collapse:collapse;margin-top:20px}
 th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #334155}
