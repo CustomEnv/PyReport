@@ -103,6 +103,7 @@ class TestCase:
     retries: list[TestCase] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
     categories: list[str] = field(default_factory=list)
+    test_id: str = ""  # stable identifier for matching across runs (e.g. nodeid without params)
     stdout: Optional[str] = None
     stderr: Optional[str] = None
     log: Optional[str] = None

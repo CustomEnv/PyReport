@@ -31,12 +31,33 @@ jobs:
       - name: Lint
         run: uv run ruff check src/pyreport/ tests/ scripts/
 
+      - name: Checkout gh-pages (for history)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: _gh-pages
+
+      - name: Restore test history
+        run: |
+          mkdir -p "_site/reports/${{ github.run_id }}/test-report"
+          if [ -d _gh-pages/.pyreport_history ]; then
+            cp -r _gh-pages/.pyreport_history "_site/reports/${{ github.run_id }}/test-report/.pyreport_history"
+          fi
+
       - name: Run tests with PyReport
         run: |
           uv run pytest tests/ \
             --pyreport \
             --pyreport-output "_site/reports/${{ github.run_id }}/test-report" \
             --tb=short
+
+      - name: Restore demo history
+        run: |
+          mkdir -p "_site/reports/${{ github.run_id }}/demo"
+          if [ -d _gh-pages/.pyreport_history ]; then
+            cp -r _gh-pages/.pyreport_history "_site/reports/${{ github.run_id }}/demo/.pyreport_history"
+          fi
 
       - name: Generate demo report
         run: |
@@ -51,13 +72,6 @@ jobs:
             "${{ github.repository }}" \
             "$(date -u +%Y-%m-%dT%H:%M:%S)" \
             > "_site/reports/${{ github.run_id }}/.meta.json"
-
-      - name: Checkout existing gh-pages
-        continue-on-error: true
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: _gh-pages
 
       - name: Merge reports and generate index
         run: |

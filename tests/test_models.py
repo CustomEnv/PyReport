@@ -129,3 +129,6 @@ class TestModelToDict:
         assert d["commit"]["branch"] == "main"
         # ci info serialized
         assert d["ci"]["name"] == "github-actions"
+        # test_id field serialized
+        assert d["suites"][0]["tests"][0]["test_id"] == ""
+        assert d["suites"][0]["tests"][1]["test_id"] == ""
