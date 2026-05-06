@@ -239,14 +239,6 @@ def _generate_index(
     for run_id, ts, has_demo, has_tests, pr, repo, run in runs:
         link = "class='text-blue-400 hover:text-blue-300'"
 
-        pr_cell: str
-        if pr and repo:
-            pr_cell = f"<a href='https://github.com/{repo}/pull/{pr}' {link}>#{pr}</a>"
-        elif pr:
-            pr_cell = f"#{pr}"
-        else:
-            pr_cell = "<span class='text-gray-500'>\u2014</span>"
-
         run_cell: str
         if run and repo:
             run_cell = (
@@ -256,7 +248,15 @@ def _generate_index(
         elif run:
             run_cell = run
         else:
-            run_cell = "<span class='text-gray-500'>\u2014</span>"
+            run_cell = run_id
+
+        pr_cell: str
+        if pr and repo:
+            pr_cell = f"<a href='https://github.com/{repo}/pull/{pr}' {link}>#{pr}</a>"
+        elif pr:
+            pr_cell = f"#{pr}"
+        else:
+            pr_cell = "<span class='text-gray-500'>\u2014</span>"
 
         if has_demo:
             demo = f"<a href='reports/{run_id}/demo/' {link}>demo</a>"
@@ -269,10 +269,9 @@ def _generate_index(
 
         rows.append(
             f"<tr class='border-b border-gray-700 hover:bg-gray-750'>"
-            f"<td class='py-2 px-3 font-mono text-sm'>{run_id}</td>"
+            f"<td class='py-2 px-3 font-mono text-sm'>{run_cell}</td>"
             f"<td class='py-2 px-3 text-sm text-gray-400'>{ts}</td>"
             f"<td class='py-2 px-3'>{pr_cell}</td>"
-            f"<td class='py-2 px-3 font-mono text-sm'>{run_cell}</td>"
             f"<td class='py-2 px-3'>{demo}</td>"
             f"<td class='py-2 px-3'>{tests}</td>"
             f"</tr>"
@@ -304,7 +303,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
           <th class="py-3 px-3">Run</th>
           <th class="py-3 px-3">Date</th>
           <th class="py-3 px-3">PR</th>
-          <th class="py-3 px-3">Actions</th>
           <th class="py-3 px-3">Demo</th>
           <th class="py-3 px-3">Tests</th>
         </tr>
