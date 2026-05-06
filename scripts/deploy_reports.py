@@ -26,17 +26,34 @@ def _discover_runs(reports_dir: Path) -> list[tuple[str, float, bool, bool]]:
 def _generate_index(runs: list[tuple[str, float, bool, bool]]) -> str:
     rows = []
     for run_id, mtime, has_demo, has_tests in runs:
-        ts = datetime.fromtimestamp(mtime, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-        demo = f"<a href='reports/{run_id}/demo/' class='text-blue-400 hover:text-blue-300'>demo</a>" if has_demo else "<span class='text-gray-600'>—</span>"
-        tests = f"<a href='reports/{run_id}/test-report/' class='text-blue-400 hover:text-blue-300'>tests</a>" if has_tests else "<span class='text-gray-600'>—</span>"
-        rows.append(f"<tr class='border-b border-gray-700 hover:bg-gray-750'><td class='py-2 px-3 font-mono text-sm'>{run_id}</td><td class='py-2 px-3 text-sm text-gray-400'>{ts}</td><td class='py-2 px-3'>{demo}</td><td class='py-2 px-3'>{tests}</td></tr>")
+        ts = datetime.fromtimestamp(mtime, tz=timezone.utc).strftime(
+            "%Y-%m-%d %H:%M UTC"
+        )
+        link = "class='text-blue-400 hover:text-blue-300'"
+        if has_demo:
+            demo = f"<a href='reports/{run_id}/demo/' {link}>demo</a>"
+        else:
+            demo = "<span class='text-gray-600'>\u2014</span>"
+        if has_tests:
+            tests = f"<a href='reports/{run_id}/test-report/' {link}>tests</a>"
+        else:
+            tests = "<span class='text-gray-600'>\u2014</span>"
+
+        rows.append(
+            f"<tr class='border-b border-gray-700 hover:bg-gray-750'>"
+            f"<td class='py-2 px-3 font-mono text-sm'>{run_id}</td>"
+            f"<td class='py-2 px-3 text-sm text-gray-400'>{ts}</td>"
+            f"<td class='py-2 px-3'>{demo}</td>"
+            f"<td class='py-2 px-3'>{tests}</td>"
+            f"</tr>"
+        )
 
     return """<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PyReport — test runs</title>
+<title>PyReport \u2014 test runs</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
@@ -51,10 +68,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
   </div>
   <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
     <table class="w-full">
-      <thead><tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
-        <th class="py-3 px-3">Run</th><th class="py-3 px-3">Date</th><th class="py-3 px-3">Demo</th><th class="py-3 px-3">Tests</th>
-      </tr></thead>
-      <tbody>""" + "\n".join(rows) + """</tbody>
+      <thead>
+        <tr class="text-left text-xs text-gray-400 uppercase tracking-wider
+                 border-b border-gray-700">
+          <th class="py-3 px-3">Run</th>
+          <th class="py-3 px-3">Date</th>
+          <th class="py-3 px-3">Demo</th>
+          <th class="py-3 px-3">Tests</th>
+        </tr>
+      </thead>
+      <tbody>
+""" + "\n".join(rows) + """      </tbody>
     </table>
   </div>
 </div>
