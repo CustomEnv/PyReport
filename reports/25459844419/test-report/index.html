@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Report — Test Run 2026-05-06T20:39:48.125338</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        pass: { DEFAULT: '#22c55e', bg: '#052e16', border: '#166534' },
+        fail: { DEFAULT: '#ef4444', bg: '#450a0a', border: '#991b1b' },
+        skip: { DEFAULT: '#eab308', bg: '#422006', border: '#854d0e' },
+        broken: { DEFAULT: '#a855f7', bg: '#3b0764', border: '#7e22ce' },
+      }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .status-passed { @apply text-pass; }
+  .status-failed { @apply text-fail; }
+  .status-skipped { @apply text-skip; }
+  .status-broken { @apply text-broken; }
+  .bg-status-passed { @apply bg-pass-bg border-pass-border; }
+  .bg-status-failed { @apply bg-fail-bg border-fail-border; }
+  .bg-status-skipped { @apply bg-skip-bg border-skip-border; }
+  .bg-status-broken { @apply bg-broken-bg border-broken-border; }
+  .badge-passed { background-color: #16a34a; color: #fff; }
+  .badge-failed { background-color: #dc2626; color: #fff; }
+  .badge-broken { background-color: #ca8a04; color: #fff; }
+  .badge-skipped { background-color: #6b7280; color: #fff; }
+  [data-status].active-filter { @apply ring-2 ring-offset-2 ring-offset-gray-900; }
+  [data-status="passed"].active-filter { @apply ring-pass; }
+  [data-status="failed"].active-filter { @apply ring-fail; }
+  [data-status="skipped"].active-filter { @apply ring-skip; }
+  .suite-item.active { @apply bg-gray-700 text-white; }
+  .test-row:hover { @apply bg-gray-750; }
+  .bg-gray-750 { background-color: #2d2d3a; }
+  .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1a1a2e; }
+  ::-webkit-scrollbar-thumb { background: #4a4a5a; border-radius: 3px; }
+</style>
+</head>
+<body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden">
+
+<!-- Sidebar -->
+<aside class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col flex-shrink-0">
+  <div class="p-4 border-b border-gray-700">
+    <h1 class="text-lg font-bold truncate">PyReport</h1>
+    <p class="text-xs text-gray-400 truncate">Test Run 2026-05-06T20:39:48.125338</p>
+    <p class="text-xs text-gray-500 mt-1">2026-05-06T20:39:48.125340</p>
+  </div>
+
+  <!-- Quick summary -->
+  <div class="px-4 py-3 border-b border-gray-700 grid grid-cols-2 gap-2 text-center text-sm">
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-pass">108</div>
+      <div class="text-xs text-gray-400">passed</div>
+    </div>
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-fail">0</div>
+      <div class="text-xs text-gray-400">failed</div>
+    </div>
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-skip">0</div>
+      <div class="text-xs text-gray-400">skipped</div>
+    </div>
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-blue-400">100.0%</div>
+      <div class="text-xs text-gray-400">pass rate</div>
+    </div>
+  </div>
+
+  <!-- Suite tree -->
+  <nav class="flex-1 overflow-y-auto p-2" id="suite-tree">
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5 active"
+         onclick="selectSuite(null)">
+      <span class="text-xs font-medium">All Suites</span>
+      <span class="ml-auto text-xs text-gray-500">11</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_attachments.py"
+         onclick="selectSuite('tests/test_attachments.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_attachments.py</span>
+      <span class="ml-auto text-xs text-gray-500">5</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_capture.py"
+         onclick="selectSuite('tests/test_capture.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_capture.py</span>
+      <span class="ml-auto text-xs text-gray-500">3</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_cli.py"
+         onclick="selectSuite('tests/test_cli.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_cli.py</span>
+      <span class="ml-auto text-xs text-gray-500">10</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_flaky.py"
+         onclick="selectSuite('tests/test_flaky.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_flaky.py</span>
+      <span class="ml-auto text-xs text-gray-500">11</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_grouper.py"
+         onclick="selectSuite('tests/test_grouper.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_grouper.py</span>
+      <span class="ml-auto text-xs text-gray-500">15</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_history_store.py"
+         onclick="selectSuite('tests/test_history_store.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_history_store.py</span>
+      <span class="ml-auto text-xs text-gray-500">14</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_html_renderer.py"
+         onclick="selectSuite('tests/test_html_renderer.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_html_renderer.py</span>
+      <span class="ml-auto text-xs text-gray-500">19</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_integration.py"
+         onclick="selectSuite('tests/test_integration.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_integration.py</span>
+      <span class="ml-auto text-xs text-gray-500">4</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_models.py"
+         onclick="selectSuite('tests/test_models.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_models.py</span>
+      <span class="ml-auto text-xs text-gray-500">11</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_pytest_plugin.py"
+         onclick="selectSuite('tests/test_pytest_plugin.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_pytest_plugin.py</span>
+      <span class="ml-auto text-xs text-gray-500">5</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_trends.py"
+         onclick="selectSuite('tests/test_trends.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_trends.py</span>
+      <span class="ml-auto text-xs text-gray-500">11</span>
+    </div>
+    
+  </nav>
+
+  <!-- Environment -->
+  
+  <div class="border-t border-gray-700">
+    <button class="w-full px-4 py-2 text-left text-xs text-gray-400 hover:text-gray-200 font-medium"
+            onclick="toggleEnv()">
+      Environment &#9660;
+    </button>
+    <div id="env-panel" class="px-4 pb-3 text-xs space-y-1 max-h-32 overflow-y-auto">
+      
+      <div><span class="text-gray-500">CI:</span> <span class="text-gray-300">true</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_ACTIONS:</span> <span class="text-gray-300">true</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_SHA:</span> <span class="text-gray-300">b01049a33078c8b0573900340633aff57f6eaa8d</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_REF_NAME:</span> <span class="text-gray-300">2/merge</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_RUN_ID:</span> <span class="text-gray-300">25459844419</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_SERVER_URL:</span> <span class="text-gray-300">https://github.com</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_REPOSITORY:</span> <span class="text-gray-300">CustomEnv/PyReport</span></div>
+      
+    </div>
+  </div>
+  
+
+  <!-- Footer -->
+  <div class="p-3 border-t border-gray-700 text-xs text-gray-500">
+    <span>108 tests · 1.002s</span>
+    
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="flex-1 flex flex-col overflow-hidden">
+  <!-- Top bar -->
+  <div class="bg-gray-800 border-b border-gray-700 px-6 py-3 flex items-center gap-4">
+    <div class="flex-1 relative">
+      <input type="text" id="search" placeholder="Search tests..."
+             class="w-full bg-gray-700 text-gray-200 rounded-lg pl-9 pr-3 py-1.5 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+             oninput="renderTests()">
+      <svg class="absolute left-2.5 top-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+    </div>
+    <div class="flex gap-1 text-xs" id="status-filters">
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-blue-500 text-blue-400 active-filter"
+              data-status="all" onclick="setFilter('all')">
+        All
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="passed" onclick="setFilter('passed')">
+        Passed
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="failed" onclick="setFilter('failed')">
+        Failed
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="skipped" onclick="setFilter('skipped')">
+        Skipped
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="broken" onclick="setFilter('broken')">
+        Broken
+      </button>
+      
+    </div>
+    <a href="history.html"
+       class="text-xs text-blue-400 hover:text-blue-300 border border-blue-800 px-3 py-1 rounded-full hover:bg-blue-900/30"
+       title="View test history across runs">History</a>
+  </div>
+
+  <!-- Content area -->
+  <div class="flex-1 overflow-y-auto p-6" id="content">
+    <!-- Chart row -->
+    <div class="flex gap-6 mb-6">
+      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 flex-shrink-0">
+        <canvas id="status-chart" width="160" height="160"></canvas>
+      </div>
+      <div class="flex-1 grid grid-cols-4 gap-3">
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-pass">108</div>
+          <div class="text-xs text-gray-400 mt-1">Passed</div>
+          <div class="w-full bg-gray-700 rounded-full h-1.5 mt-2">
+            <div class="bg-pass h-1.5 rounded-full" style="width: 100.0%"></div>
+          </div>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-fail">0</div>
+          <div class="text-xs text-gray-400 mt-1">Failed</div>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-skip">0</div>
+          <div class="text-xs text-gray-400 mt-1">Skipped</div>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-gray-200">1.002s</div>
+          <div class="text-xs text-gray-400 mt-1">Duration</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error groups (only when failures exist) -->
+    <div id="error-groups" class="mb-6"></div>
+
+    <!-- Test list -->
+    <div id="test-list" class="space-y-1">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</main>
+
+<script>
+const DATA = {"id": "20260506203948", "project": "PyReport", "name": "Test Run 2026-05-06T20:39:48.125338", "timestamp": "2026-05-06T20:39:48.125340", "duration": 1.002, "status": "passed", "stats": {"total": 108, "passed": 108, "failed": 0, "broken": 0, "skipped": 0, "pass_rate": 100.0}, "suites": [{"id": "tests/test_attachments.py", "name": "tests/test_attachments.py", "duration": 0.031, "status": "passed", "tests": [{"id": "tests/test_attachments.py::TestAttachments::test_attach_text_file", "name": "test_attach_text_file", "full_name": "tests/test_attachments.py::TestAttachments::test_attach_text_file", "duration": 0.031408696999996266, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_attachments.py::TestAttachments::test_attach_text_file", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_attach_text_file0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_attach.py .                                                         [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_attachments.py::TestAttachments::test_attach_file_copied_to_output", "name": "test_attach_file_copied_to_output", "full_name": "tests/test_attachments.py::TestAttachments::test_attach_file_copied_to_output", "duration": 0.02955344999999454, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_attachments.py::TestAttachments::test_attach_file_copied_to_output", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_attach_file_copied_to_output0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_attach.py .                                                         [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_attachments.py::TestAttachments::test_multiple_attachments", "name": "test_multiple_attachments", "full_name": "tests/test_attachments.py::TestAttachments::test_multiple_attachments", "duration": 0.028695435000003044, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_attachments.py::TestAttachments::test_multiple_attachments", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_multiple_attachments0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_multi.py .                                                          [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_attachments.py::TestAttachments::test_attachments_in_html_report", "name": "test_attachments_in_html_report", "full_name": "tests/test_attachments.py::TestAttachments::test_attachments_in_html_report", "duration": 0.02841244900000106, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_attachments.py::TestAttachments::test_attachments_in_html_report", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_attachments_in_html_report0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_att.py .                                                            [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_attachments.py::TestAttachments::test_attachment_without_fixture", "name": "test_attachment_without_fixture", "full_name": "tests/test_attachments.py::TestAttachments::test_attachment_without_fixture", "duration": 0.02931973599999793, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_attachments.py::TestAttachments::test_attachment_without_fixture", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_attachment_without_fixture0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_normal.py .                                                         [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}]}, {"id": "tests/test_capture.py", "name": "tests/test_capture.py", "duration": 0.03, "status": "passed", "tests": [{"id": "tests/test_capture.py::TestStdoutCapture::test_captures_stdout", "name": "test_captures_stdout", "full_name": "tests/test_capture.py::TestStdoutCapture::test_captures_stdout", "duration": 0.028173295999998516, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_capture.py::TestStdoutCapture::test_captures_stdout", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_captures_stdout0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_print.py .                                                          [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_capture.py::TestStdoutCapture::test_captures_stderr", "name": "test_captures_stderr", "full_name": "tests/test_capture.py::TestStdoutCapture::test_captures_stderr", "duration": 0.028320690000001036, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_capture.py::TestStdoutCapture::test_captures_stderr", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_captures_stderr0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_err.py .                                                            [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_capture.py::TestStdoutCapture::test_captures_logging", "name": "test_captures_logging", "full_name": "tests/test_capture.py::TestStdoutCapture::test_captures_logging", "duration": 0.03010925599999581, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_capture.py::TestStdoutCapture::test_captures_logging", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_captures_logging0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_log.py .                                                            [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": "WARNING  test_log:test_log.py:4 warning message"}]}, {"id": "tests/test_cli.py", "name": "tests/test_cli.py", "duration": 0.191, "status": "passed", "tests": [{"id": "tests/test_cli.py::TestGenerate::test_generate_from_json", "name": "test_generate_from_json", "full_name": "tests/test_cli.py::TestGenerate::test_generate_from_json", "duration": 0.009600767999998538, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestGenerate::test_generate_from_json", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestGenerate::test_generate_file_not_found", "name": "test_generate_file_not_found", "full_name": "tests/test_cli.py::TestGenerate::test_generate_file_not_found", "duration": 0.001939641999996411, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestGenerate::test_generate_file_not_found", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestGenerate::test_merge_two_reports", "name": "test_merge_two_reports", "full_name": "tests/test_cli.py::TestGenerate::test_merge_two_reports", "duration": 0.009780204000001902, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestGenerate::test_merge_two_reports", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestGenerate::test_merge_no_inputs", "name": "test_merge_no_inputs", "full_name": "tests/test_cli.py::TestGenerate::test_merge_no_inputs", "duration": 0.19070839099999404, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestGenerate::test_merge_no_inputs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestGenerate::test_generate_multiple_suites", "name": "test_generate_multiple_suites", "full_name": "tests/test_cli.py::TestGenerate::test_generate_multiple_suites", "duration": 0.009631216000002496, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestGenerate::test_generate_multiple_suites", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestGenerate::test_generate_with_embed_attachments", "name": "test_generate_with_embed_attachments", "full_name": "tests/test_cli.py::TestGenerate::test_generate_with_embed_attachments", "duration": 0.009158902999999441, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestGenerate::test_generate_with_embed_attachments", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestHistory::test_history_no_directory", "name": "test_history_no_directory", "full_name": "tests/test_cli.py::TestHistory::test_history_no_directory", "duration": 0.0018235749999959694, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestHistory::test_history_no_directory", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestHistory::test_history_no_history_data", "name": "test_history_no_history_data", "full_name": "tests/test_cli.py::TestHistory::test_history_no_history_data", "duration": 0.0018960609999965072, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestHistory::test_history_no_history_data", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestHistory::test_history_with_data", "name": "test_history_with_data", "full_name": "tests/test_cli.py::TestHistory::test_history_with_data", "duration": 0.013547328000001357, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestHistory::test_history_with_data", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_cli.py::TestHistory::test_history_generates_html", "name": "test_history_generates_html", "full_name": "tests/test_cli.py::TestHistory::test_history_generates_html", "duration": 0.013620426000002794, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_cli.py::TestHistory::test_history_generates_html", "stdout": "", "stderr": "", "log": ""}]}, {"id": "tests/test_flaky.py", "name": "tests/test_flaky.py", "duration": 0.002, "status": "passed", "tests": [{"id": "tests/test_flaky.py::TestDetectFlaky::test_no_runs", "name": "test_no_runs", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_no_runs", "duration": 0.00012159699999614304, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_no_runs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_single_run", "name": "test_single_run", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_single_run", "duration": 0.0005857539999993833, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_single_run", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_stable_test", "name": "test_stable_test", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_stable_test", "duration": 0.0015180350000036924, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_stable_test", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_flaky_test", "name": "test_flaky_test", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_flaky_test", "duration": 0.0014525429999991957, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_flaky_test", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_flaky_with_four_runs", "name": "test_flaky_with_four_runs", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_flaky_with_four_runs", "duration": 0.001996317999996222, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_flaky_with_four_runs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_min_runs_filter", "name": "test_min_runs_filter", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_min_runs_filter", "duration": 0.0010958760000008283, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_min_runs_filter", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_min_score_filter", "name": "test_min_score_filter", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_min_score_filter", "duration": 0.0015500250000002325, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_min_score_filter", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_multiple_tests", "name": "test_multiple_tests", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_multiple_tests", "duration": 0.0024366300000053798, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_multiple_tests", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestDetectFlaky::test_different_test_ids_across_runs", "name": "test_different_test_ids_across_runs", "full_name": "tests/test_flaky.py::TestDetectFlaky::test_different_test_ids_across_runs", "duration": 0.001377312000002462, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestDetectFlaky::test_different_test_ids_across_runs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestFlakyTestDataclass::test_flaky_test_creation", "name": "test_flaky_test_creation", "full_name": "tests/test_flaky.py::TestFlakyTestDataclass::test_flaky_test_creation", "duration": 0.00011742000000225516, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestFlakyTestDataclass::test_flaky_test_creation", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_flaky.py::TestFlakyTestDataclass::test_flaky_test_sorting", "name": "test_flaky_test_sorting", "full_name": "tests/test_flaky.py::TestFlakyTestDataclass::test_flaky_test_sorting", "duration": 9.607999999872163e-05, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_flaky.py::TestFlakyTestDataclass::test_flaky_test_sorting", "stdout": "", "stderr": "", "log": ""}]}, {"id": "tests/test_grouper.py", "name": "tests/test_grouper.py", "duration": 0.001, "status": "passed", "tests": [{"id": "tests/test_grouper.py::TestNormalizeTraceback::test_none_or_empty", "name": "test_none_or_empty", "full_name": "tests/test_grouper.py::TestNormalizeTraceback::test_none_or_empty", "duration": 9.296400000380345e-05, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestNormalizeTraceback::test_none_or_empty", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_line_numbers", "name": "test_normalizes_line_numbers", "full_name": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_line_numbers", "duration": 0.0005822880000039277, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_line_numbers", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_addresses", "name": "test_normalizes_addresses", "full_name": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_addresses", "duration": 0.00011245000000315031, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_addresses", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_strings", "name": "test_normalizes_strings", "full_name": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_strings", "duration": 0.00010403499999966925, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_strings", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_numbers", "name": "test_normalizes_numbers", "full_name": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_numbers", "duration": 0.00010667899999816655, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestNormalizeTraceback::test_normalizes_numbers", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestNormalizeTraceback::test_same_error_normalizes_equally", "name": "test_same_error_normalizes_equally", "full_name": "tests/test_grouper.py::TestNormalizeTraceback::test_same_error_normalizes_equally", "duration": 0.00012387099999955353, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestNormalizeTraceback::test_same_error_normalizes_equally", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestNormalizeTraceback::test_different_errors_different_normalized", "name": "test_different_errors_different_normalized", "full_name": "tests/test_grouper.py::TestNormalizeTraceback::test_different_errors_different_normalized", "duration": 0.00010599799999511106, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestNormalizeTraceback::test_different_errors_different_normalized", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestHashTraceback::test_returns_consistent_hash", "name": "test_returns_consistent_hash", "full_name": "tests/test_grouper.py::TestHashTraceback::test_returns_consistent_hash", "duration": 0.0001441089999971723, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestHashTraceback::test_returns_consistent_hash", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestHashTraceback::test_same_error_same_hash", "name": "test_same_error_same_hash", "full_name": "tests/test_grouper.py::TestHashTraceback::test_same_error_same_hash", "duration": 0.00013154599999865013, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestHashTraceback::test_same_error_same_hash", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestHashTraceback::test_different_error_different_hash", "name": "test_different_error_different_hash", "full_name": "tests/test_grouper.py::TestHashTraceback::test_different_error_different_hash", "duration": 0.00011253999999638609, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestHashTraceback::test_different_error_different_hash", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestHashTraceback::test_none_returns_none", "name": "test_none_returns_none", "full_name": "tests/test_grouper.py::TestHashTraceback::test_none_returns_none", "duration": 8.996800000460325e-05, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestHashTraceback::test_none_returns_none", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestGroupFailures::test_groups_identical_errors", "name": "test_groups_identical_errors", "full_name": "tests/test_grouper.py::TestGroupFailures::test_groups_identical_errors", "duration": 0.0001724019999969073, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestGroupFailures::test_groups_identical_errors", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestGroupFailures::test_separates_different_errors", "name": "test_separates_different_errors", "full_name": "tests/test_grouper.py::TestGroupFailures::test_separates_different_errors", "duration": 0.0001360640000029889, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestGroupFailures::test_separates_different_errors", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestGroupFailures::test_skips_passed_tests", "name": "test_skips_passed_tests", "full_name": "tests/test_grouper.py::TestGroupFailures::test_skips_passed_tests", "duration": 0.00010092800000194302, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestGroupFailures::test_skips_passed_tests", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_grouper.py::TestGroupFailures::test_returns_sorted_by_count", "name": "test_returns_sorted_by_count", "full_name": "tests/test_grouper.py::TestGroupFailures::test_returns_sorted_by_count", "duration": 0.0001835519999957569, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_grouper.py::TestGroupFailures::test_returns_sorted_by_count", "stdout": "", "stderr": "", "log": ""}]}, {"id": "tests/test_history_store.py", "name": "tests/test_history_store.py", "duration": 0.001, "status": "passed", "tests": [{"id": "tests/test_history_store.py::TestHistoryStore::test_save_and_list", "name": "test_save_and_list", "full_name": "tests/test_history_store.py::TestHistoryStore::test_save_and_list", "duration": 0.00047322399999671916, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_save_and_list", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_save_multiple_runs", "name": "test_save_multiple_runs", "full_name": "tests/test_history_store.py::TestHistoryStore::test_save_multiple_runs", "duration": 0.0009377410000013242, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_save_multiple_runs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_load_run", "name": "test_load_run", "full_name": "tests/test_history_store.py::TestHistoryStore::test_load_run", "duration": 0.0005337670000002959, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_load_run", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_load_nonexistent_run", "name": "test_load_nonexistent_run", "full_name": "tests/test_history_store.py::TestHistoryStore::test_load_nonexistent_run", "duration": 0.00011601599999977452, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_load_nonexistent_run", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_get_previous_run", "name": "test_get_previous_run", "full_name": "tests/test_history_store.py::TestHistoryStore::test_get_previous_run", "duration": 0.0009506350000023644, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_get_previous_run", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_get_test_history", "name": "test_get_test_history", "full_name": "tests/test_history_store.py::TestHistoryStore::test_get_test_history", "duration": 0.00100276300000246, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_get_test_history", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_list_runs_empty", "name": "test_list_runs_empty", "full_name": "tests/test_history_store.py::TestHistoryStore::test_list_runs_empty", "duration": 0.00011626700000277879, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_list_runs_empty", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_index_file_created", "name": "test_index_file_created", "full_name": "tests/test_history_store.py::TestHistoryStore::test_index_file_created", "duration": 0.0004949149999973201, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_index_file_created", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_save_run_replaces_existing", "name": "test_save_run_replaces_existing", "full_name": "tests/test_history_store.py::TestHistoryStore::test_save_run_replaces_existing", "duration": 0.0008268040000061205, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_save_run_replaces_existing", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_load_run_with_corrupted_json", "name": "test_load_run_with_corrupted_json", "full_name": "tests/test_history_store.py::TestHistoryStore::test_load_run_with_corrupted_json", "duration": 0.00029786600000392127, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_load_run_with_corrupted_json", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_list_runs_with_corrupted_index", "name": "test_list_runs_with_corrupted_index", "full_name": "tests/test_history_store.py::TestHistoryStore::test_list_runs_with_corrupted_index", "duration": 0.00024608900000089307, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_list_runs_with_corrupted_index", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_get_test_history_unknown_test", "name": "test_get_test_history_unknown_test", "full_name": "tests/test_history_store.py::TestHistoryStore::test_get_test_history_unknown_test", "duration": 0.0005682409999963056, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_get_test_history_unknown_test", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_load_all_runs", "name": "test_load_all_runs", "full_name": "tests/test_history_store.py::TestHistoryStore::test_load_all_runs", "duration": 0.0008832890000007865, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_load_all_runs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_history_store.py::TestHistoryStore::test_save_run_creates_history_dir", "name": "test_save_run_creates_history_dir", "full_name": "tests/test_history_store.py::TestHistoryStore::test_save_run_creates_history_dir", "duration": 0.00042838000000244847, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_history_store.py::TestHistoryStore::test_save_run_creates_history_dir", "stdout": "", "stderr": "", "log": ""}]}, {"id": "tests/test_html_renderer.py", "name": "tests/test_html_renderer.py", "duration": 0.011, "status": "passed", "tests": [{"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_renders_valid_html", "name": "test_renders_valid_html", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_renders_valid_html", "duration": 0.007257211999998958, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_renders_valid_html", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_stats", "name": "test_contains_stats", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_stats", "duration": 0.006997847999997475, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_stats", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_suites", "name": "test_contains_suites", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_suites", "duration": 0.007317595000003507, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_suites", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_test_cases", "name": "test_contains_test_cases", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_test_cases", "duration": 0.007067167000002428, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_test_cases", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_failure_details", "name": "test_contains_failure_details", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_failure_details", "duration": 0.00717119200000127, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_failure_details", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_embedded_data", "name": "test_contains_embedded_data", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_embedded_data", "duration": 0.007011873999999807, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_contains_embedded_data", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_embedded_json_is_valid", "name": "test_embedded_json_is_valid", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_embedded_json_is_valid", "duration": 0.007122911999999815, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_embedded_json_is_valid", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_search_calls_render_tests", "name": "test_search_calls_render_tests", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_search_calls_render_tests", "duration": 0.006984522999999854, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_search_calls_render_tests", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_all_suites_button_in_sidebar", "name": "test_all_suites_button_in_sidebar", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_all_suites_button_in_sidebar", "duration": 0.007123141999997529, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_all_suites_button_in_sidebar", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_selectSuite_handles_deselection", "name": "test_selectSuite_handles_deselection", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_selectSuite_handles_deselection", "duration": 0.007011913999996011, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_selectSuite_handles_deselection", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_stdout_stderr_log_sections_use_toggle", "name": "test_stdout_stderr_log_sections_use_toggle", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_stdout_stderr_log_sections_use_toggle", "duration": 0.007037252000003491, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_stdout_stderr_log_sections_use_toggle", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestHTMLRenderer::test_empty_run", "name": "test_empty_run", "full_name": "tests/test_html_renderer.py::TestHTMLRenderer::test_empty_run", "duration": 0.006927064999999288, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestHTMLRenderer::test_empty_run", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestEmbedAttachments::test_embed_small_file", "name": "test_embed_small_file", "full_name": "tests/test_html_renderer.py::TestEmbedAttachments::test_embed_small_file", "duration": 0.010519895000001611, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestEmbedAttachments::test_embed_small_file", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestEmbedAttachments::test_no_embed_large_file", "name": "test_no_embed_large_file", "full_name": "tests/test_html_renderer.py::TestEmbedAttachments::test_no_embed_large_file", "duration": 0.007327093000000673, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestEmbedAttachments::test_no_embed_large_file", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestEmbedAttachments::test_embed_no_source_dir_fallback", "name": "test_embed_no_source_dir_fallback", "full_name": "tests/test_html_renderer.py::TestEmbedAttachments::test_embed_no_source_dir_fallback", "duration": 0.007046978999994735, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestEmbedAttachments::test_embed_no_source_dir_fallback", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_empty", "name": "test_render_history_empty", "full_name": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_empty", "duration": 0.010783187000001249, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_empty", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_flaky_only", "name": "test_render_history_with_flaky_only", "full_name": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_flaky_only", "duration": 0.010729847999996878, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_flaky_only", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_trends_only", "name": "test_render_history_with_trends_only", "full_name": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_trends_only", "duration": 0.010857524999998702, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_trends_only", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_slowest_tests", "name": "test_render_history_with_slowest_tests", "full_name": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_slowest_tests", "duration": 0.010635742000005166, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_html_renderer.py::TestRenderHistory::test_render_history_with_slowest_tests", "stdout": "", "stderr": "", "log": ""}]}, {"id": "tests/test_integration.py", "name": "tests/test_integration.py", "duration": 0.058, "status": "passed", "tests": [{"id": "tests/test_integration.py::TestEndToEnd::test_pytest_plugin_generates_html", "name": "test_pytest_plugin_generates_html", "full_name": "tests/test_integration.py::TestEndToEnd::test_pytest_plugin_generates_html", "duration": 0.058262730999999235, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_integration.py::TestEndToEnd::test_pytest_plugin_generates_html", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_pytest_plugin_generates_html0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 3 items\n\ntest_demo.py ..F                                                         [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_fail ___________________________________\n\n    def test_fail():\n>       assert 1 == 2\nE       assert 1 == 2\n\ntest_demo.py:11: AssertionError\n=============================== warnings summary ===============================\ntest_demo.py:6\n  /tmp/pytest-of-runner/pytest-0/test_pytest_plugin_generates_html0/test_demo.py:6: PytestUnknownMarkWarning: Unknown pytest.mark.smoke - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.smoke\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED test_demo.py::test_fail - assert 1 == 2\n==================== 1 failed, 2 passed, 1 warning in 0.04s ====================\n", "stderr": "", "log": ""}, {"id": "tests/test_integration.py::TestEndToEnd::test_cli_generate_from_plugin_output", "name": "test_cli_generate_from_plugin_output", "full_name": "tests/test_integration.py::TestEndToEnd::test_cli_generate_from_plugin_output", "duration": 0.043107499999997856, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_integration.py::TestEndToEnd::test_cli_generate_from_plugin_output", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_cli_generate_from_plugin_output0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\nexample_test.py .                                                        [100%]\n\n============================== 1 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_integration.py::TestEndToEnd::test_pytest_plugin_marks", "name": "test_pytest_plugin_marks", "full_name": "tests/test_integration.py::TestEndToEnd::test_pytest_plugin_marks", "duration": 0.029893863999994608, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_integration.py::TestEndToEnd::test_pytest_plugin_marks", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_pytest_plugin_marks0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_marks.py .                                                          [100%]\n\n=============================== warnings summary ===============================\ntest_marks.py:3\n  /tmp/pytest-of-runner/pytest-0/test_pytest_plugin_marks0/test_marks.py:3: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.slow\n\ntest_marks.py:4\n  /tmp/pytest-of-runner/pytest-0/test_pytest_plugin_marks0/test_marks.py:4: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.integration\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n======================== 1 passed, 2 warnings in 0.01s =========================\n", "stderr": "", "log": ""}, {"id": "tests/test_integration.py::TestRichReport::test_rich_report_with_all_features", "name": "test_rich_report_with_all_features", "full_name": "tests/test_integration.py::TestRichReport::test_rich_report_with_all_features", "duration": 0.036839894999999956, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_integration.py::TestRichReport::test_rich_report_with_all_features", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0 -- /home/runner/work/PyReport/PyReport/.venv/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/pytest-of-runner/pytest-0/test_rich_report_with_all_features0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_rich.py::test_with_stdout PASSED                                    [ 16%]\ntest_rich.py::test_with_stderr PASSED                                    [ 33%]\ntest_rich.py::test_with_logging PASSED                                   [ 50%]\ntest_rich.py::test_with_attachment PASSED                                [ 66%]\ntest_rich.py::test_all_together PASSED                                   [ 83%]\ntest_rich.py::test_failure_with_details FAILED                           [100%]\n\n=================================== FAILURES ===================================\n__________________________ test_failure_with_details ___________________________\n\npyreport_attach = <function pyreport_attach.<locals>._attach at 0x7fbc7cba72e0>\n\n    def test_failure_with_details(pyreport_attach):\n        print(\"Starting computation\")\n        pyreport_attach(\"config.xml\", b\"<config/>\", \"text/xml\")\n>       assert 1 == 2, \"Expected 200, got 500\"\nE       AssertionError: Expected 200, got 500\nE       assert 1 == 2\n\ntest_rich.py:32: AssertionError\n----------------------------- Captured stdout call -----------------------------\nStarting computation\n=========================== short test summary info ============================\nFAILED test_rich.py::test_failure_with_details - AssertionError: Expected 200, got 500\nassert 1 == 2\n========================= 1 failed, 5 passed in 0.02s ==========================\n", "stderr": "", "log": "WARNING  root:test_rich.py:13 User logged in\nERROR    root:test_rich.py:14 Response time 1500ms"}]}, {"id": "tests/test_models.py", "name": "tests/test_models.py", "duration": 0.0, "status": "passed", "tests": [{"id": "tests/test_models.py::TestStatus::test_values", "name": "test_values", "full_name": "tests/test_models.py::TestStatus::test_values", "duration": 0.00010354300000159355, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestStatus::test_values", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestRunStats::test_pass_rate_full", "name": "test_pass_rate_full", "full_name": "tests/test_models.py::TestRunStats::test_pass_rate_full", "duration": 0.00011581700000107276, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestRunStats::test_pass_rate_full", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestRunStats::test_pass_rate_half", "name": "test_pass_rate_half", "full_name": "tests/test_models.py::TestRunStats::test_pass_rate_half", "duration": 0.00011001600000071221, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestRunStats::test_pass_rate_half", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestRunStats::test_pass_rate_zero", "name": "test_pass_rate_zero", "full_name": "tests/test_models.py::TestRunStats::test_pass_rate_zero", "duration": 0.00010686899999967636, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestRunStats::test_pass_rate_zero", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestTestHistory::test_flaky_score_stable", "name": "test_flaky_score_stable", "full_name": "tests/test_models.py::TestTestHistory::test_flaky_score_stable", "duration": 0.00010403400000313923, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestTestHistory::test_flaky_score_stable", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestTestHistory::test_flaky_score_alternating", "name": "test_flaky_score_alternating", "full_name": "tests/test_models.py::TestTestHistory::test_flaky_score_alternating", "duration": 0.00010661900000030755, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestTestHistory::test_flaky_score_alternating", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestTestHistory::test_flaky_score_insufficient_data", "name": "test_flaky_score_insufficient_data", "full_name": "tests/test_models.py::TestTestHistory::test_flaky_score_insufficient_data", "duration": 9.680100000508673e-05, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestTestHistory::test_flaky_score_insufficient_data", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestTestRun::test_compute_stats", "name": "test_compute_stats", "full_name": "tests/test_models.py::TestTestRun::test_compute_stats", "duration": 9.796300000175506e-05, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestTestRun::test_compute_stats", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestTestRun::test_compute_stats_all_pass", "name": "test_compute_stats_all_pass", "full_name": "tests/test_models.py::TestTestRun::test_compute_stats_all_pass", "duration": 0.00010670999999717878, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestTestRun::test_compute_stats_all_pass", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestTestRun::test_compute_stats_all_skipped", "name": "test_compute_stats_all_skipped", "full_name": "tests/test_models.py::TestTestRun::test_compute_stats_all_skipped", "duration": 0.00010513600000194856, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestTestRun::test_compute_stats_all_skipped", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_models.py::TestModelToDict::test_serializes_correctly", "name": "test_serializes_correctly", "full_name": "tests/test_models.py::TestModelToDict::test_serializes_correctly", "duration": 0.00017051799999734385, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_models.py::TestModelToDict::test_serializes_correctly", "stdout": "", "stderr": "", "log": ""}]}, {"id": "tests/test_pytest_plugin.py", "name": "tests/test_pytest_plugin.py", "duration": 0.034, "status": "passed", "tests": [{"id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_generates_report_with_results", "name": "test_generates_report_with_results", "full_name": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_generates_report_with_results", "duration": 0.034359092000002533, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_generates_report_with_results", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_generates_report_with_results0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 3 items\n\ntest_demo.py .Fs                                                         [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_fail ___________________________________\n\n    def test_fail():\n>       assert False\nE       assert False\n\ntest_demo.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED test_demo.py::test_fail - assert False\n==================== 1 failed, 1 passed, 1 skipped in 0.02s ====================\n", "stderr": "", "log": ""}, {"id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_all_pass", "name": "test_all_pass", "full_name": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_all_pass", "duration": 0.03100223100000221, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_all_pass", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_all_pass0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 2 items\n\ntest_all_good.py ..                                                      [100%]\n\n============================== 2 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_suite_structure", "name": "test_suite_structure", "full_name": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_suite_structure", "duration": 0.029265150000000517, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_suite_structure", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_suite_structure0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 2 items\n\ntest_bar.py .                                                            [ 50%]\ntest_foo.py .                                                            [100%]\n\n============================== 2 passed in 0.01s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_parametrized_tests", "name": "test_parametrized_tests", "full_name": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_parametrized_tests", "duration": 0.031006722000000764, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_parametrized_tests", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_parametrized_tests0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 2 items\n\ntest_param.py ..                                                         [100%]\n\n============================== 2 passed in 0.02s ===============================\n", "stderr": "", "log": ""}, {"id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_traceback_on_failure", "name": "test_traceback_on_failure", "full_name": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_traceback_on_failure", "duration": 0.029360779000001003, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_pytest_plugin.py::TestPyReportPlugin::test_traceback_on_failure", "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/pytest-of-runner/pytest-0/test_traceback_on_failure0\nplugins: cov-7.1.0, pyreport-0.1.0, anyio-4.13.0\ncollected 1 item\n\ntest_errors.py F                                                         [100%]\n\n=================================== FAILURES ===================================\n___________________________________ test_bad ___________________________________\n\n    def test_bad():\n>       raise ValueError(\"something broke\")\nE       ValueError: something broke\n\ntest_errors.py:2: ValueError\n=========================== short test summary info ============================\nFAILED test_errors.py::test_bad - ValueError: something broke\n============================== 1 failed in 0.01s ===============================\n", "stderr": "", "log": ""}]}, {"id": "tests/test_trends.py", "name": "tests/test_trends.py", "duration": 0.001, "status": "passed", "tests": [{"id": "tests/test_trends.py::TestAnalyzeDuration::test_no_runs", "name": "test_no_runs", "full_name": "tests/test_trends.py::TestAnalyzeDuration::test_no_runs", "duration": 0.00012349100000363933, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestAnalyzeDuration::test_no_runs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestAnalyzeDuration::test_single_run", "name": "test_single_run", "full_name": "tests/test_trends.py::TestAnalyzeDuration::test_single_run", "duration": 0.0005922260000019719, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestAnalyzeDuration::test_single_run", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestAnalyzeDuration::test_two_runs", "name": "test_two_runs", "full_name": "tests/test_trends.py::TestAnalyzeDuration::test_two_runs", "duration": 0.0012547429999969495, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestAnalyzeDuration::test_two_runs", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestAnalyzeDuration::test_duration_increase_trend", "name": "test_duration_increase_trend", "full_name": "tests/test_trends.py::TestAnalyzeDuration::test_duration_increase_trend", "duration": 0.0014161040000004732, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestAnalyzeDuration::test_duration_increase_trend", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestAnalyzeDuration::test_duration_decrease", "name": "test_duration_decrease", "full_name": "tests/test_trends.py::TestAnalyzeDuration::test_duration_decrease", "duration": 0.0009552739999989512, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestAnalyzeDuration::test_duration_decrease", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestAnalyzeDuration::test_sort_by_latest_duration", "name": "test_sort_by_latest_duration", "full_name": "tests/test_trends.py::TestAnalyzeDuration::test_sort_by_latest_duration", "duration": 0.0010076120000022115, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestAnalyzeDuration::test_sort_by_latest_duration", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestAnalyzeDuration::test_multiple_tests_different_suites", "name": "test_multiple_tests_different_suites", "full_name": "tests/test_trends.py::TestAnalyzeDuration::test_multiple_tests_different_suites", "duration": 0.0010491589999972462, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestAnalyzeDuration::test_multiple_tests_different_suites", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestGetSlowestTests::test_slowest_tests", "name": "test_slowest_tests", "full_name": "tests/test_trends.py::TestGetSlowestTests::test_slowest_tests", "duration": 0.00011463399999911417, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestGetSlowestTests::test_slowest_tests", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestGetSlowestTests::test_top_n_larger_than_total", "name": "test_top_n_larger_than_total", "full_name": "tests/test_trends.py::TestGetSlowestTests::test_top_n_larger_than_total", "duration": 0.0001264660000046547, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestGetSlowestTests::test_top_n_larger_than_total", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestDurationTrendDataclass::test_duration_trend_creation", "name": "test_duration_trend_creation", "full_name": "tests/test_trends.py::TestDurationTrendDataclass::test_duration_trend_creation", "duration": 0.00010541700000032961, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestDurationTrendDataclass::test_duration_trend_creation", "stdout": "", "stderr": "", "log": ""}, {"id": "tests/test_trends.py::TestDurationTrendDataclass::test_empty_points", "name": "test_empty_points", "full_name": "tests/test_trends.py::TestDurationTrendDataclass::test_empty_points", "duration": 9.792299999844545e-05, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": [], "categories": [], "test_id": "tests/test_trends.py::TestDurationTrendDataclass::test_empty_points", "stdout": "", "stderr": "", "log": ""}]}], "environment": {"CI": "true", "GITHUB_ACTIONS": "true", "GITHUB_SHA": "b01049a33078c8b0573900340633aff57f6eaa8d", "GITHUB_REF_NAME": "2/merge", "GITHUB_RUN_ID": "25459844419", "GITHUB_SERVER_URL": "https://github.com", "GITHUB_REPOSITORY": "CustomEnv/PyReport"}, "attachments": [], "commit": null, "ci": null};
+
+let currentFilter = 'all';
+let selectedSuite = null;
+let chart = null;
+
+function initChart() {
+  const ctx = document.getElementById('status-chart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Passed', 'Failed', 'Skipped'],
+      datasets: [{
+        data: [DATA.stats.passed, DATA.stats.failed, DATA.stats.skipped],
+        backgroundColor: ['#22c55e', '#ef4444', '#eab308'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      cutout: '70%',
+    }
+  });
+}
+
+function selectSuite(suiteId) {
+  if (selectedSuite === suiteId) {
+    suiteId = null;
+  }
+  selectedSuite = suiteId;
+  document.querySelectorAll('.suite-item').forEach(el => el.classList.remove('active'));
+  if (suiteId) {
+    const el = document.querySelector(`[data-suite-id="${suiteId}"]`);
+    if (el) el.classList.add('active');
+  } else {
+    document.querySelector('.suite-item:first-child').classList.add('active');
+  }
+  renderTests();
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function errorGroupHtml(errors) {
+  if (!errors || errors.length === 0) return '';
+  return `
+    <div class="bg-gray-800 rounded-lg border border-gray-700 p-4">
+      <h3 class="text-sm font-medium text-gray-300 mb-3">Error Groups (${errors.length})</h3>
+      ${errors.map(g => `
+        <div class="mb-2 last:mb-0">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-fail font-bold">${g.count}x</span>
+            <span class="text-gray-300 truncate">${escapeHtml(g.headline)}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function groupErrors(tests) {
+  const map = {};
+  for (const t of tests) {
+    if (t.status !== 'failed' && t.status !== 'broken') continue;
+    if (!t.traceback) continue;
+    const key = t.traceback.replace(/\d+/g, 'N').replace(/'[^']*'/g, "'S'").replace(/0x[0-9a-f]+/g, '0xH');
+    if (!map[key]) map[key] = { headline: t.message || t.traceback.split('\\n')[0], count: 0, tests: [] };
+    map[key].count++;
+    map[key].tests.push(t.full_name);
+  }
+  return Object.values(map).sort((a, b) => b.count - a.count);
+}
+
+function renderTests() {
+  const container = document.getElementById('test-list');
+  const search = (document.getElementById('search').value || '').toLowerCase();
+
+  let tests = [];
+  const suites = selectedSuite
+    ? DATA.suites.filter(s => s.id === selectedSuite)
+    : DATA.suites;
+
+  for (const suite of suites) {
+    for (const t of suite.tests) {
+      tests.push({ ...t, suiteName: suite.name });
+    }
+  }
+
+  // Filter by status
+  if (currentFilter !== 'all') {
+    tests = tests.filter(t => t.status === currentFilter);
+  }
+
+  // Filter by search
+  if (search) {
+    tests = tests.filter(t =>
+      t.name.toLowerCase().includes(search) ||
+      t.full_name.toLowerCase().includes(search) ||
+      (t.suiteName && t.suiteName.toLowerCase().includes(search)) ||
+      (t.message && t.message.toLowerCase().includes(search))
+    );
+  }
+
+  // Error groups
+  const groups = selectedSuite ? [] : groupErrors(tests);
+  document.getElementById('error-groups').innerHTML = errorGroupHtml(groups);
+
+  if (tests.length === 0) {
+    container.innerHTML = '<div class="text-center text-gray-500 py-12">No tests match your filters</div>';
+    return;
+  }
+
+  container.innerHTML = tests.map(t => `
+    <div class="test-row bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+      <div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer"
+           onclick="toggleTest(this)">
+        <span class="w-2 h-2 rounded-full flex-shrink-0 status-${t.status} bg-current"></span>
+        <span class="flex-1 text-sm font-medium">${escapeHtml(t.name)}</span>
+        <span class="text-xs text-gray-500">${(t.duration || 0).toFixed(2)}s</span>
+        <span class="text-xs px-1.5 py-0.5 rounded badge-${t.status}">${t.status}</span>
+      </div>
+      <div class="test-details hidden border-t border-gray-700 px-4 py-3 bg-gray-900 text-xs space-y-3">
+        <div class="text-gray-400">${escapeHtml(t.full_name)}</div>
+        ${t.message ? `<div class="text-fail">${escapeHtml(t.message)}</div>` : ''}
+        ${t.traceback ? `<pre class="mono text-red-300 bg-gray-950 p-3 rounded overflow-x-auto mt-1">${escapeHtml(t.traceback)}</pre>` : ''}
+        ${Object.keys(t.parameters || {}).length ? `
+          <div class="flex gap-2 flex-wrap">
+            ${Object.entries(t.parameters).map(([k,v]) =>
+              `<span class="px-2 py-0.5 bg-gray-800 rounded text-gray-300">${escapeHtml(k)}: ${escapeHtml(v)}</span>`
+            ).join('')}
+          </div>
+        ` : ''}
+        ${t.tags && t.tags.length ? `
+          <div class="flex gap-1 flex-wrap">
+            ${t.tags.map(tag =>
+              `<span class="px-2 py-0.5 bg-blue-900 text-blue-300 rounded text-xs">${escapeHtml(tag)}</span>`
+            ).join('')}
+          </div>
+        ` : ''}
+        ${t.stdout ? `
+          <div>
+            <button class="text-gray-400 hover:text-gray-200" onclick="toggleSection(this)">[+] stdout</button>
+            <pre class="mono text-gray-300 bg-gray-950 p-2 rounded hidden mt-1 overflow-x-auto">${escapeHtml(t.stdout.substring(0, 2000))}</pre>
+          </div>
+        ` : ''}
+        ${t.stderr ? `
+          <div>
+            <button class="text-gray-400 hover:text-gray-200" onclick="toggleSection(this)">[+] stderr</button>
+            <pre class="mono text-red-300 bg-gray-950 p-2 rounded hidden mt-1 overflow-x-auto">${escapeHtml(t.stderr.substring(0, 2000))}</pre>
+          </div>
+        ` : ''}
+        ${t.log ? `
+          <div>
+            <button class="text-gray-400 hover:text-gray-200" onclick="toggleSection(this)">[+] log</button>
+            <pre class="mono text-yellow-300 bg-gray-950 p-2 rounded hidden mt-1 overflow-x-auto">${escapeHtml(t.log.substring(0, 2000))}</pre>
+          </div>
+        ` : ''}
+        ${t.attachments && t.attachments.length ? `
+          <div class="flex gap-2 flex-wrap">
+            ${t.attachments.map(a =>
+              `<a href="${escapeHtml(a.path)}" class="px-2 py-1 bg-gray-800 rounded text-blue-400 hover:text-blue-300 text-xs" target="_blank">${escapeHtml(a.name)}</a>`
+            ).join('')}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleTest(row) {
+  const details = row.nextElementSibling;
+  if (details && details.classList.contains('test-details')) {
+    details.classList.toggle('hidden');
+  }
+}
+
+function toggleSection(btn) {
+  const pre = btn.nextElementSibling;
+  if (pre) {
+    pre.classList.toggle('hidden');
+    btn.textContent = pre.classList.contains('hidden') ? '[+] ' + btn.textContent.slice(4) : '[-] ' + btn.textContent.slice(4);
+  }
+}
+
+function toggleEnv() {
+  const panel = document.getElementById('env-panel');
+  if (panel) panel.classList.toggle('hidden');
+}
+
+function setFilter(status) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active-filter', btn.dataset.status === status);
+    if (btn.dataset.status === status) {
+      const colors = { all: 'border-blue-500 text-blue-400', passed: 'ring-pass', failed: 'ring-fail', skipped: 'ring-skip', broken: 'ring-broken' };
+      btn.className = `filter-btn px-3 py-1 rounded-full border active-filter ${colors[status] || 'border-blue-500 text-blue-400'}`;
+    } else {
+      btn.className = 'filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400';
+    }
+  });
+  renderTests();
+}
+
+// Init
+initChart();
+renderTests();
+</script>
+</body>
+</html>
