@@ -145,20 +145,38 @@ def _tags_for(test_id: str) -> list[str]:
     return sorted(tags)
 
 
+def _make_demo_png(width: int = 200, height: int = 100) -> bytes:
+    """Generate a small visible PNG with colored bars (pure Python, no deps)."""
+    import struct
+    import zlib
+
+    def chunk(chunk_type: bytes, data: bytes) -> bytes:
+        c = chunk_type + data
+        return struct.pack(">I", len(data)) + c + struct.pack(">I", zlib.crc32(c) & 0xFFFFFFFF)
+
+    sig = b"\x89PNG\r\n\x1a\n"
+    ihdr = chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))  # 8-bit RGB
+
+    raw = bytearray()
+    bar_w = max(1, width // 5)
+    colors = [(255, 80, 80), (80, 255, 80), (80, 130, 255), (255, 220, 50), (180, 100, 255)]
+    for y in range(height):
+        raw.append(0)  # filter byte
+        for x in range(width):
+            r, g, b = colors[(x // bar_w) % len(colors)]
+            raw.extend([r, g, b])
+    idat = chunk(b"IDAT", zlib.compress(bytes(raw)))
+    iend = chunk(b"IEND", b"")
+    return sig + ihdr + idat + iend
+
+
 def _create_demo_attachments(output_dir: Path) -> Path:
     """Create demo attachment files and return the attachments directory."""
     att_dir = output_dir / "attachments"
     att_dir.mkdir(parents=True, exist_ok=True)
 
-    # Small PNG screenshot (1x1 pixel valid PNG ~ 67 bytes)
-    png_data = (
-        b"\x89PNG\r\n\x1a\n"  # PNG signature
-        b"\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
-        b"\x08\x02\x00\x00\x00\x90wS\xde"
-        b"\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N"
-        b"\x00\x00\x00\x00IEND\xaeB`\x82"
-    )
-    (att_dir / "screenshot.png").write_bytes(png_data)
+    # Visible PNG with colored bars
+    (att_dir / "screenshot.png").write_bytes(_make_demo_png())
 
     # Small HTML page source
     (att_dir / "page_source.html").write_text(
