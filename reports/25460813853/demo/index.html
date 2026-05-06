@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Report — Demo Run (2026-05-04 14:00)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        pass: { DEFAULT: '#22c55e', bg: '#052e16', border: '#166534' },
+        fail: { DEFAULT: '#ef4444', bg: '#450a0a', border: '#991b1b' },
+        skip: { DEFAULT: '#eab308', bg: '#422006', border: '#854d0e' },
+        broken: { DEFAULT: '#a855f7', bg: '#3b0764', border: '#7e22ce' },
+      }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .status-passed { @apply text-pass; }
+  .status-failed { @apply text-fail; }
+  .status-skipped { @apply text-skip; }
+  .status-broken { @apply text-broken; }
+  .bg-status-passed { @apply bg-pass-bg border-pass-border; }
+  .bg-status-failed { @apply bg-fail-bg border-fail-border; }
+  .bg-status-skipped { @apply bg-skip-bg border-skip-border; }
+  .bg-status-broken { @apply bg-broken-bg border-broken-border; }
+  .badge-passed { background-color: #16a34a; color: #fff; }
+  .badge-failed { background-color: #dc2626; color: #fff; }
+  .badge-broken { background-color: #ca8a04; color: #fff; }
+  .badge-skipped { background-color: #6b7280; color: #fff; }
+  [data-status].active-filter { @apply ring-2 ring-offset-2 ring-offset-gray-900; }
+  [data-status="passed"].active-filter { @apply ring-pass; }
+  [data-status="failed"].active-filter { @apply ring-fail; }
+  [data-status="skipped"].active-filter { @apply ring-skip; }
+  .suite-item.active { @apply bg-gray-700 text-white; }
+  .test-row:hover { @apply bg-gray-750; }
+  .bg-gray-750 { background-color: #2d2d3a; }
+  .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1a1a2e; }
+  ::-webkit-scrollbar-thumb { background: #4a4a5a; border-radius: 3px; }
+</style>
+</head>
+<body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden">
+
+<!-- Sidebar -->
+<aside class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col flex-shrink-0">
+  <div class="p-4 border-b border-gray-700">
+    <h1 class="text-lg font-bold truncate">PyReport Demo</h1>
+    <p class="text-xs text-gray-400 truncate">Demo Run (2026-05-04 14:00)</p>
+    <p class="text-xs text-gray-500 mt-1">2026-05-04T14:00:00</p>
+  </div>
+
+  <!-- Quick summary -->
+  <div class="px-4 py-3 border-b border-gray-700 grid grid-cols-2 gap-2 text-center text-sm">
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-pass">7</div>
+      <div class="text-xs text-gray-400">passed</div>
+    </div>
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-fail">3</div>
+      <div class="text-xs text-gray-400">failed</div>
+    </div>
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-skip">1</div>
+      <div class="text-xs text-gray-400">skipped</div>
+    </div>
+    <div class="bg-gray-900 rounded p-2">
+      <div class="text-xl font-bold text-blue-400">63.6%</div>
+      <div class="text-xs text-gray-400">pass rate</div>
+    </div>
+  </div>
+
+  <!-- Suite tree -->
+  <nav class="flex-1 overflow-y-auto p-2" id="suite-tree">
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5 active"
+         onclick="selectSuite(null)">
+      <span class="text-xs font-medium">All Suites</span>
+      <span class="ml-auto text-xs text-gray-500">4</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_api.py"
+         onclick="selectSuite('tests/test_api.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-failed bg-current"></span>
+      <span class="truncate">tests/test_api.py</span>
+      <span class="ml-auto text-xs text-gray-500">3</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_auth.py"
+         onclick="selectSuite('tests/test_auth.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-failed bg-current"></span>
+      <span class="truncate">tests/test_auth.py</span>
+      <span class="ml-auto text-xs text-gray-500">2</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_ui.py"
+         onclick="selectSuite('tests/test_ui.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-passed bg-current"></span>
+      <span class="truncate">tests/test_ui.py</span>
+      <span class="ml-auto text-xs text-gray-500">3</span>
+    </div>
+    
+    <div class="suite-item flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm text-gray-300 hover:bg-gray-700 mb-0.5"
+         data-suite-id="tests/test_orders.py"
+         onclick="selectSuite('tests/test_orders.py')">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 status-failed bg-current"></span>
+      <span class="truncate">tests/test_orders.py</span>
+      <span class="ml-auto text-xs text-gray-500">3</span>
+    </div>
+    
+  </nav>
+
+  <!-- Environment -->
+  
+  <div class="border-t border-gray-700">
+    <button class="w-full px-4 py-2 text-left text-xs text-gray-400 hover:text-gray-200 font-medium"
+            onclick="toggleEnv()">
+      Environment &#9660;
+    </button>
+    <div id="env-panel" class="px-4 pb-3 text-xs space-y-1 max-h-32 overflow-y-auto">
+      
+      <div><span class="text-gray-500">CI:</span> <span class="text-gray-300">true</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_ACTIONS:</span> <span class="text-gray-300">true</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_SHA:</span> <span class="text-gray-300">abc003def</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_REF_NAME:</span> <span class="text-gray-300">main</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_RUN_ID:</span> <span class="text-gray-300">demo-003</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_REPOSITORY:</span> <span class="text-gray-300">user/pyreport</span></div>
+      
+      <div><span class="text-gray-500">GITHUB_SERVER_URL:</span> <span class="text-gray-300">https://github.com</span></div>
+      
+      <div><span class="text-gray-500">OS:</span> <span class="text-gray-300">macOS</span></div>
+      
+      <div><span class="text-gray-500">PYTHON_VERSION:</span> <span class="text-gray-300">3.11</span></div>
+      
+      <div><span class="text-gray-500">TZ:</span> <span class="text-gray-300">UTC</span></div>
+      
+    </div>
+  </div>
+  
+
+  <!-- Footer -->
+  <div class="p-3 border-t border-gray-700 text-xs text-gray-500">
+    <span>11 tests · 6.7s</span>
+    
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="flex-1 flex flex-col overflow-hidden">
+  <!-- Top bar -->
+  <div class="bg-gray-800 border-b border-gray-700 px-6 py-3 flex items-center gap-4">
+    <div class="flex-1 relative">
+      <input type="text" id="search" placeholder="Search tests..."
+             class="w-full bg-gray-700 text-gray-200 rounded-lg pl-9 pr-3 py-1.5 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+             oninput="renderTests()">
+      <svg class="absolute left-2.5 top-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+    </div>
+    <div class="flex gap-1 text-xs" id="status-filters">
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-blue-500 text-blue-400 active-filter"
+              data-status="all" onclick="setFilter('all')">
+        All
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="passed" onclick="setFilter('passed')">
+        Passed
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="failed" onclick="setFilter('failed')">
+        Failed
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="skipped" onclick="setFilter('skipped')">
+        Skipped
+      </button>
+      
+      <button class="filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400"
+              data-status="broken" onclick="setFilter('broken')">
+        Broken
+      </button>
+      
+    </div>
+    <a href="history.html"
+       class="text-xs text-blue-400 hover:text-blue-300 border border-blue-800 px-3 py-1 rounded-full hover:bg-blue-900/30"
+       title="View test history across runs">History</a>
+  </div>
+
+  <!-- Content area -->
+  <div class="flex-1 overflow-y-auto p-6" id="content">
+    <!-- Chart row -->
+    <div class="flex gap-6 mb-6">
+      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 flex-shrink-0">
+        <canvas id="status-chart" width="160" height="160"></canvas>
+      </div>
+      <div class="flex-1 grid grid-cols-4 gap-3">
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-pass">7</div>
+          <div class="text-xs text-gray-400 mt-1">Passed</div>
+          <div class="w-full bg-gray-700 rounded-full h-1.5 mt-2">
+            <div class="bg-pass h-1.5 rounded-full" style="width: 63.6%"></div>
+          </div>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-fail">3</div>
+          <div class="text-xs text-gray-400 mt-1">Failed</div>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-skip">1</div>
+          <div class="text-xs text-gray-400 mt-1">Skipped</div>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="text-2xl font-bold text-gray-200">6.7s</div>
+          <div class="text-xs text-gray-400 mt-1">Duration</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error groups (only when failures exist) -->
+    <div id="error-groups" class="mb-6"></div>
+
+    <!-- Test list -->
+    <div id="test-list" class="space-y-1">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</main>
+
+<script>
+const DATA = {"id": "demo-003", "project": "PyReport Demo", "name": "Demo Run (2026-05-04 14:00)", "timestamp": "2026-05-04T14:00:00", "duration": 6.7, "status": "failed", "stats": {"total": 11, "passed": 7, "failed": 3, "broken": 0, "skipped": 1, "pass_rate": 63.6}, "suites": [{"id": "tests/test_api.py", "name": "tests/test_api.py", "duration": 0.7, "status": "failed", "tests": [{"id": "tests/test_api.py::test_get_users", "name": "test_get_users", "full_name": "tests/test_api.py::test_get_users", "duration": 0.3, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["smoke"], "categories": [], "test_id": "tests/test_api.py::test_get_users", "stdout": "GET /api/users -> 200\nResponse: [{\"id\": 1, \"name\": \"Alice\"}]", "stderr": null, "log": null}, {"id": "tests/test_api.py::test_create_user", "name": "test_create_user", "full_name": "tests/test_api.py::test_create_user", "duration": 0.7, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["smoke"], "categories": [], "test_id": "tests/test_api.py::test_create_user", "stdout": "POST /api/users -> 201\nCreated user #42", "stderr": "[WARN] Rate limit: 100/1000 requests used", "log": null}, {"id": "tests/test_api.py::test_delete_user", "name": "test_delete_user", "full_name": "tests/test_api.py::test_delete_user", "duration": 0.4, "status": "failed", "message": "AssertionError: Expected 200, got 500", "traceback": "  File \"tests/test_api.py\", line 42, in test_delete_user\n    assert response.status == 200\nAssertionError: Expected 200, got 500\n", "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["smoke"], "categories": [], "test_id": "tests/test_api.py::test_delete_user", "stdout": "DELETE /api/users/42 -> 403", "stderr": null, "log": null}]}, {"id": "tests/test_auth.py", "name": "tests/test_auth.py", "duration": 0.3, "status": "failed", "tests": [{"id": "tests/test_auth.py::test_login", "name": "test_login", "full_name": "tests/test_auth.py::test_login", "duration": 0.2, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["security", "smoke"], "categories": [], "test_id": "tests/test_auth.py::test_login", "stdout": "POST /auth/login -> 200\nToken: eyJ...", "stderr": null, "log": null}, {"id": "tests/test_auth.py::test_unauthorized", "name": "test_unauthorized", "full_name": "tests/test_auth.py::test_unauthorized", "duration": 0.3, "status": "failed", "message": "AssertionError: Expected 200, got 500", "traceback": "  File \"tests/test_auth.py\", line 42, in test_unauthorized\n    assert response.status == 200\nAssertionError: Expected 200, got 500\n", "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["security", "smoke"], "categories": [], "test_id": "tests/test_auth.py::test_unauthorized", "stdout": null, "stderr": null, "log": null}]}, {"id": "tests/test_ui.py", "name": "tests/test_ui.py", "duration": 2.5, "status": "passed", "tests": [{"id": "tests/test_ui.py::test_screenshot", "name": "test_screenshot", "full_name": "tests/test_ui.py::test_screenshot", "duration": 2.5, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [{"name": "screenshot.png", "path": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAIAAABM5OhcAAABUklEQVR4nO3SMQ0AIBAEQTShBBEoQRNy8PLg4igm2X6baTVGpMz1tSpSnR5pz4rUwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwAILLLDAAgsssMACCyywwALrb1gXTyrFQgA1OLwAAAAASUVORK5CYII=", "mime_type": "image/png", "size": 395}], "history": null, "retries": [], "tags": ["smoke", "visual"], "categories": [], "test_id": "tests/test_ui.py::test_screenshot", "stdout": "Screenshot saved: /tmp/screen.png", "stderr": null, "log": "2026-05-05 20:00:01 [INFO] Page loaded\n2026-05-05 20:00:02 [INFO] Element found\n2026-05-05 20:00:02 [DEBUG] Screenshot captured"}, {"id": "tests/test_ui.py::test_form_submit", "name": "test_form_submit", "full_name": "tests/test_ui.py::test_form_submit", "duration": 0.8, "status": "passed", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [{"name": "page_source.html", "path": "data:text/html;base64,PGh0bWw+PGJvZHk+PGgxPkRhc2hib2FyZDwvaDE+PHA+V2VsY29tZSB0byB0aGUgZGFzaGJvYXJkLjwvcD48L2JvZHk+PC9odG1sPg==", "mime_type": "text/html", "size": 76}], "history": null, "retries": [], "tags": ["smoke", "visual"], "categories": [], "test_id": "tests/test_ui.py::test_form_submit", "stdout": null, "stderr": "[WARN] Deprecated: submit() will be removed in v3", "log": null}, {"id": "tests/test_ui.py::test_dashboard", "name": "test_dashboard", "full_name": "tests/test_ui.py::test_dashboard", "duration": 0.0, "status": "skipped", "message": null, "traceback": null, "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["smoke", "visual"], "categories": [], "test_id": "tests/test_ui.py::test_dashboard", "stdout": null, "stderr": null, "log": null}]}, {"id": "tests/test_orders.py", "name": "tests/test_orders.py", "duration": 0.6, "status": "failed", "tests": [{"id": "tests/test_orders.py::test_create_order[item=laptop-qty=1]", "name": "test_create_order", "full_name": "tests/test_orders.py::test_create_order[item=laptop-qty=1]", "duration": 0.6, "status": "passed", "message": null, "traceback": null, "parameters": {"item": "laptop", "qty": "1"}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["critical-path", "smoke"], "categories": [], "test_id": "tests/test_orders.py::test_create_order", "stdout": "Order #9876 created", "stderr": null, "log": null}, {"id": "tests/test_orders.py::test_create_order[item=phone-qty=2]", "name": "test_create_order", "full_name": "tests/test_orders.py::test_create_order[item=phone-qty=2]", "duration": 0.5, "status": "passed", "message": null, "traceback": null, "parameters": {"item": "phone", "qty": "2"}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["critical-path", "smoke"], "categories": [], "test_id": "tests/test_orders.py::test_create_order", "stdout": "Order #9876 created", "stderr": null, "log": null}, {"id": "tests/test_orders.py::test_cancel_order", "name": "test_cancel_order", "full_name": "tests/test_orders.py::test_cancel_order", "duration": 0.4, "status": "failed", "message": "AssertionError: Expected 200, got 500", "traceback": "  File \"tests/test_orders.py\", line 42, in test_cancel_order\n    assert response.status == 200\nAssertionError: Expected 200, got 500\n", "parameters": {}, "steps": [], "attachments": [], "history": null, "retries": [], "tags": ["critical-path", "smoke"], "categories": [], "test_id": "tests/test_orders.py::test_cancel_order", "stdout": "Attempting to cancel order #9876", "stderr": "[ERROR] Connection pool exhausted", "log": null}]}], "environment": {"CI": "true", "GITHUB_ACTIONS": "true", "GITHUB_SHA": "abc003def", "GITHUB_REF_NAME": "main", "GITHUB_RUN_ID": "demo-003", "GITHUB_REPOSITORY": "user/pyreport", "GITHUB_SERVER_URL": "https://github.com", "OS": "macOS", "PYTHON_VERSION": "3.11", "TZ": "UTC"}, "attachments": [], "commit": null, "ci": null};
+
+let currentFilter = 'all';
+let selectedSuite = null;
+let chart = null;
+
+function initChart() {
+  const ctx = document.getElementById('status-chart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Passed', 'Failed', 'Skipped'],
+      datasets: [{
+        data: [DATA.stats.passed, DATA.stats.failed, DATA.stats.skipped],
+        backgroundColor: ['#22c55e', '#ef4444', '#eab308'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      cutout: '70%',
+    }
+  });
+}
+
+function selectSuite(suiteId) {
+  if (selectedSuite === suiteId) {
+    suiteId = null;
+  }
+  selectedSuite = suiteId;
+  document.querySelectorAll('.suite-item').forEach(el => el.classList.remove('active'));
+  if (suiteId) {
+    const el = document.querySelector(`[data-suite-id="${suiteId}"]`);
+    if (el) el.classList.add('active');
+  } else {
+    document.querySelector('.suite-item:first-child').classList.add('active');
+  }
+  renderTests();
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function errorGroupHtml(errors) {
+  if (!errors || errors.length === 0) return '';
+  return `
+    <div class="bg-gray-800 rounded-lg border border-gray-700 p-4">
+      <h3 class="text-sm font-medium text-gray-300 mb-3">Error Groups (${errors.length})</h3>
+      ${errors.map(g => `
+        <div class="mb-2 last:mb-0">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-fail font-bold">${g.count}x</span>
+            <span class="text-gray-300 truncate">${escapeHtml(g.headline)}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function groupErrors(tests) {
+  const map = {};
+  for (const t of tests) {
+    if (t.status !== 'failed' && t.status !== 'broken') continue;
+    if (!t.traceback) continue;
+    const key = t.traceback.replace(/\d+/g, 'N').replace(/'[^']*'/g, "'S'").replace(/0x[0-9a-f]+/g, '0xH');
+    if (!map[key]) map[key] = { headline: t.message || t.traceback.split('\\n')[0], count: 0, tests: [] };
+    map[key].count++;
+    map[key].tests.push(t.full_name);
+  }
+  return Object.values(map).sort((a, b) => b.count - a.count);
+}
+
+function renderTests() {
+  const container = document.getElementById('test-list');
+  const search = (document.getElementById('search').value || '').toLowerCase();
+
+  let tests = [];
+  const suites = selectedSuite
+    ? DATA.suites.filter(s => s.id === selectedSuite)
+    : DATA.suites;
+
+  for (const suite of suites) {
+    for (const t of suite.tests) {
+      tests.push({ ...t, suiteName: suite.name });
+    }
+  }
+
+  // Filter by status
+  if (currentFilter !== 'all') {
+    tests = tests.filter(t => t.status === currentFilter);
+  }
+
+  // Filter by search
+  if (search) {
+    tests = tests.filter(t =>
+      t.name.toLowerCase().includes(search) ||
+      t.full_name.toLowerCase().includes(search) ||
+      (t.suiteName && t.suiteName.toLowerCase().includes(search)) ||
+      (t.message && t.message.toLowerCase().includes(search))
+    );
+  }
+
+  // Error groups
+  const groups = selectedSuite ? [] : groupErrors(tests);
+  document.getElementById('error-groups').innerHTML = errorGroupHtml(groups);
+
+  if (tests.length === 0) {
+    container.innerHTML = '<div class="text-center text-gray-500 py-12">No tests match your filters</div>';
+    return;
+  }
+
+  container.innerHTML = tests.map(t => `
+    <div class="test-row bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+      <div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer"
+           onclick="toggleTest(this)">
+        <span class="w-2 h-2 rounded-full flex-shrink-0 status-${t.status} bg-current"></span>
+        <span class="flex-1 text-sm font-medium">${escapeHtml(t.name)}</span>
+        <span class="text-xs text-gray-500">${(t.duration || 0).toFixed(2)}s</span>
+        <span class="text-xs px-1.5 py-0.5 rounded badge-${t.status}">${t.status}</span>
+      </div>
+      <div class="test-details hidden border-t border-gray-700 px-4 py-3 bg-gray-900 text-xs space-y-3">
+        <div class="text-gray-400">${escapeHtml(t.full_name)}</div>
+        ${t.message ? `<div class="text-fail">${escapeHtml(t.message)}</div>` : ''}
+        ${t.traceback ? `<pre class="mono text-red-300 bg-gray-950 p-3 rounded overflow-x-auto mt-1">${escapeHtml(t.traceback)}</pre>` : ''}
+        ${Object.keys(t.parameters || {}).length ? `
+          <div class="flex gap-2 flex-wrap">
+            ${Object.entries(t.parameters).map(([k,v]) =>
+              `<span class="px-2 py-0.5 bg-gray-800 rounded text-gray-300">${escapeHtml(k)}: ${escapeHtml(v)}</span>`
+            ).join('')}
+          </div>
+        ` : ''}
+        ${t.tags && t.tags.length ? `
+          <div class="flex gap-1 flex-wrap">
+            ${t.tags.map(tag =>
+              `<span class="px-2 py-0.5 bg-blue-900 text-blue-300 rounded text-xs">${escapeHtml(tag)}</span>`
+            ).join('')}
+          </div>
+        ` : ''}
+        ${t.stdout ? `
+          <div>
+            <button class="text-gray-400 hover:text-gray-200" onclick="toggleSection(this)">[+] stdout</button>
+            <pre class="mono text-gray-300 bg-gray-950 p-2 rounded hidden mt-1 overflow-x-auto">${escapeHtml(t.stdout.substring(0, 2000))}</pre>
+          </div>
+        ` : ''}
+        ${t.stderr ? `
+          <div>
+            <button class="text-gray-400 hover:text-gray-200" onclick="toggleSection(this)">[+] stderr</button>
+            <pre class="mono text-red-300 bg-gray-950 p-2 rounded hidden mt-1 overflow-x-auto">${escapeHtml(t.stderr.substring(0, 2000))}</pre>
+          </div>
+        ` : ''}
+        ${t.log ? `
+          <div>
+            <button class="text-gray-400 hover:text-gray-200" onclick="toggleSection(this)">[+] log</button>
+            <pre class="mono text-yellow-300 bg-gray-950 p-2 rounded hidden mt-1 overflow-x-auto">${escapeHtml(t.log.substring(0, 2000))}</pre>
+          </div>
+        ` : ''}
+        ${t.attachments && t.attachments.length ? `
+          <div class="flex flex-wrap gap-2">
+            ${t.attachments.map(a =>
+              a.mime_type && a.mime_type.startsWith('image/')
+                ? `<img src="${escapeHtml(a.path)}" alt="${escapeHtml(a.name)}" class="max-w-xs max-h-48 rounded border border-gray-700 cursor-pointer hover:opacity-90" onclick="window.open(this.src,'_blank')" title="${escapeHtml(a.name)}">`
+                : `<a href="${escapeHtml(a.path)}" class="px-2 py-1 bg-gray-800 rounded text-blue-400 hover:text-blue-300 text-xs" target="_blank">${escapeHtml(a.name)}</a>`
+            ).join('')}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleTest(row) {
+  const details = row.nextElementSibling;
+  if (details && details.classList.contains('test-details')) {
+    details.classList.toggle('hidden');
+  }
+}
+
+function toggleSection(btn) {
+  const pre = btn.nextElementSibling;
+  if (pre) {
+    pre.classList.toggle('hidden');
+    btn.textContent = pre.classList.contains('hidden') ? '[+] ' + btn.textContent.slice(4) : '[-] ' + btn.textContent.slice(4);
+  }
+}
+
+function toggleEnv() {
+  const panel = document.getElementById('env-panel');
+  if (panel) panel.classList.toggle('hidden');
+}
+
+function setFilter(status) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active-filter', btn.dataset.status === status);
+    if (btn.dataset.status === status) {
+      const colors = { all: 'border-blue-500 text-blue-400', passed: 'ring-pass', failed: 'ring-fail', skipped: 'ring-skip', broken: 'ring-broken' };
+      btn.className = `filter-btn px-3 py-1 rounded-full border active-filter ${colors[status] || 'border-blue-500 text-blue-400'}`;
+    } else {
+      btn.className = 'filter-btn px-3 py-1 rounded-full border border-gray-600 text-gray-400';
+    }
+  });
+  renderTests();
+}
+
+// Init
+initChart();
+renderTests();
+</script>
+</body>
+</html>
