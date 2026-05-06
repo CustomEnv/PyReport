@@ -1,0 +1,321 @@
+{
+  "id": "demo-003",
+  "project": "PyReport Demo",
+  "name": "Demo Run (2026-05-04 14:00)",
+  "timestamp": "2026-05-04T14:00:00",
+  "duration": 6.7,
+  "status": "failed",
+  "stats": {
+    "total": 11,
+    "passed": 7,
+    "failed": 3,
+    "broken": 0,
+    "skipped": 1,
+    "pass_rate": 63.6
+  },
+  "suites": [
+    {
+      "id": "tests/test_api.py",
+      "name": "tests/test_api.py",
+      "duration": 0.7,
+      "status": "failed",
+      "tests": [
+        {
+          "id": "tests/test_api.py::test_get_users",
+          "name": "test_get_users",
+          "full_name": "tests/test_api.py::test_get_users",
+          "duration": 0.3,
+          "status": "passed",
+          "message": null,
+          "traceback": null,
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_api.py::test_get_users",
+          "stdout": "GET /api/users -> 200\nResponse: [{\"id\": 1, \"name\": \"Alice\"}]",
+          "stderr": null,
+          "log": null
+        },
+        {
+          "id": "tests/test_api.py::test_create_user",
+          "name": "test_create_user",
+          "full_name": "tests/test_api.py::test_create_user",
+          "duration": 0.7,
+          "status": "passed",
+          "message": null,
+          "traceback": null,
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_api.py::test_create_user",
+          "stdout": "POST /api/users -> 201\nCreated user #42",
+          "stderr": "[WARN] Rate limit: 100/1000 requests used",
+          "log": null
+        },
+        {
+          "id": "tests/test_api.py::test_delete_user",
+          "name": "test_delete_user",
+          "full_name": "tests/test_api.py::test_delete_user",
+          "duration": 0.4,
+          "status": "failed",
+          "message": "AssertionError: Expected 200, got 500",
+          "traceback": "  File \"tests/test_api.py\", line 42, in test_delete_user\n    assert response.status == 200\nAssertionError: Expected 200, got 500\n",
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_api.py::test_delete_user",
+          "stdout": "DELETE /api/users/42 -> 403",
+          "stderr": null,
+          "log": null
+        }
+      ]
+    },
+    {
+      "id": "tests/test_auth.py",
+      "name": "tests/test_auth.py",
+      "duration": 0.3,
+      "status": "failed",
+      "tests": [
+        {
+          "id": "tests/test_auth.py::test_login",
+          "name": "test_login",
+          "full_name": "tests/test_auth.py::test_login",
+          "duration": 0.2,
+          "status": "passed",
+          "message": null,
+          "traceback": null,
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "security",
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_auth.py::test_login",
+          "stdout": "POST /auth/login -> 200\nToken: eyJ...",
+          "stderr": null,
+          "log": null
+        },
+        {
+          "id": "tests/test_auth.py::test_unauthorized",
+          "name": "test_unauthorized",
+          "full_name": "tests/test_auth.py::test_unauthorized",
+          "duration": 0.3,
+          "status": "failed",
+          "message": "AssertionError: Expected 200, got 500",
+          "traceback": "  File \"tests/test_auth.py\", line 42, in test_unauthorized\n    assert response.status == 200\nAssertionError: Expected 200, got 500\n",
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "security",
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_auth.py::test_unauthorized",
+          "stdout": null,
+          "stderr": null,
+          "log": null
+        }
+      ]
+    },
+    {
+      "id": "tests/test_ui.py",
+      "name": "tests/test_ui.py",
+      "duration": 2.5,
+      "status": "passed",
+      "tests": [
+        {
+          "id": "tests/test_ui.py::test_screenshot",
+          "name": "test_screenshot",
+          "full_name": "tests/test_ui.py::test_screenshot",
+          "duration": 2.5,
+          "status": "passed",
+          "message": null,
+          "traceback": null,
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "smoke",
+            "visual"
+          ],
+          "categories": [],
+          "test_id": "tests/test_ui.py::test_screenshot",
+          "stdout": "Screenshot saved: /tmp/screen.png",
+          "stderr": null,
+          "log": "2026-05-05 20:00:01 [INFO] Page loaded\n2026-05-05 20:00:02 [INFO] Element found\n2026-05-05 20:00:02 [DEBUG] Screenshot captured"
+        },
+        {
+          "id": "tests/test_ui.py::test_form_submit",
+          "name": "test_form_submit",
+          "full_name": "tests/test_ui.py::test_form_submit",
+          "duration": 0.8,
+          "status": "passed",
+          "message": null,
+          "traceback": null,
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "smoke",
+            "visual"
+          ],
+          "categories": [],
+          "test_id": "tests/test_ui.py::test_form_submit",
+          "stdout": null,
+          "stderr": "[WARN] Deprecated: submit() will be removed in v3",
+          "log": null
+        },
+        {
+          "id": "tests/test_ui.py::test_dashboard",
+          "name": "test_dashboard",
+          "full_name": "tests/test_ui.py::test_dashboard",
+          "duration": 0.0,
+          "status": "skipped",
+          "message": null,
+          "traceback": null,
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "smoke",
+            "visual"
+          ],
+          "categories": [],
+          "test_id": "tests/test_ui.py::test_dashboard",
+          "stdout": null,
+          "stderr": null,
+          "log": null
+        }
+      ]
+    },
+    {
+      "id": "tests/test_orders.py",
+      "name": "tests/test_orders.py",
+      "duration": 0.6,
+      "status": "failed",
+      "tests": [
+        {
+          "id": "tests/test_orders.py::test_create_order[item=laptop-qty=1]",
+          "name": "test_create_order",
+          "full_name": "tests/test_orders.py::test_create_order[item=laptop-qty=1]",
+          "duration": 0.6,
+          "status": "passed",
+          "message": null,
+          "traceback": null,
+          "parameters": {
+            "item": "laptop",
+            "qty": "1"
+          },
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "critical-path",
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_orders.py::test_create_order",
+          "stdout": "Order #9876 created",
+          "stderr": null,
+          "log": null
+        },
+        {
+          "id": "tests/test_orders.py::test_create_order[item=phone-qty=2]",
+          "name": "test_create_order",
+          "full_name": "tests/test_orders.py::test_create_order[item=phone-qty=2]",
+          "duration": 0.5,
+          "status": "passed",
+          "message": null,
+          "traceback": null,
+          "parameters": {
+            "item": "phone",
+            "qty": "2"
+          },
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "critical-path",
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_orders.py::test_create_order",
+          "stdout": "Order #9876 created",
+          "stderr": null,
+          "log": null
+        },
+        {
+          "id": "tests/test_orders.py::test_cancel_order",
+          "name": "test_cancel_order",
+          "full_name": "tests/test_orders.py::test_cancel_order",
+          "duration": 0.4,
+          "status": "failed",
+          "message": "AssertionError: Expected 200, got 500",
+          "traceback": "  File \"tests/test_orders.py\", line 42, in test_cancel_order\n    assert response.status == 200\nAssertionError: Expected 200, got 500\n",
+          "parameters": {},
+          "steps": [],
+          "attachments": [],
+          "history": null,
+          "retries": [],
+          "tags": [
+            "critical-path",
+            "smoke"
+          ],
+          "categories": [],
+          "test_id": "tests/test_orders.py::test_cancel_order",
+          "stdout": "Attempting to cancel order #9876",
+          "stderr": "[ERROR] Connection pool exhausted",
+          "log": null
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "CI": "true",
+    "GITHUB_ACTIONS": "true",
+    "GITHUB_SHA": "abc003def",
+    "GITHUB_REF_NAME": "main",
+    "GITHUB_RUN_ID": "demo-003",
+    "GITHUB_REPOSITORY": "user/pyreport",
+    "GITHUB_SERVER_URL": "https://github.com",
+    "OS": "macOS",
+    "PYTHON_VERSION": "3.11",
+    "TZ": "UTC"
+  },
+  "attachments": [],
+  "commit": null,
+  "ci": null
+}

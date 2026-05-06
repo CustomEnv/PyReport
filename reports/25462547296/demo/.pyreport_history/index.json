@@ -1,16 +1,5 @@
 [
   {
-    "id": "20260506213735",
-    "timestamp": "2026-05-06T21:37:35.833122",
-    "total": 108,
-    "passed": 108,
-    "failed": 0,
-    "broken": 0,
-    "skipped": 0,
-    "pass_rate": 100.0,
-    "duration": 1.055
-  },
-  {
     "id": "20260506210234",
     "timestamp": "2026-05-06T21:02:34.371888",
     "total": 108,
@@ -64,5 +53,38 @@
     "skipped": 0,
     "pass_rate": 100.0,
     "duration": 1.002
+  },
+  {
+    "id": "demo-003",
+    "timestamp": "2026-05-04T14:00:00",
+    "total": 11,
+    "passed": 7,
+    "failed": 3,
+    "broken": 0,
+    "skipped": 1,
+    "pass_rate": 63.6,
+    "duration": 6.7
+  },
+  {
+    "id": "demo-002",
+    "timestamp": "2026-05-04T12:00:00",
+    "total": 11,
+    "passed": 8,
+    "failed": 2,
+    "broken": 0,
+    "skipped": 1,
+    "pass_rate": 72.7,
+    "duration": 5.9
+  },
+  {
+    "id": "demo-001",
+    "timestamp": "2026-05-04T10:00:00",
+    "total": 11,
+    "passed": 7,
+    "failed": 2,
+    "broken": 1,
+    "skipped": 1,
+    "pass_rate": 63.6,
+    "duration": 5.2
   }
 ]
