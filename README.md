@@ -30,14 +30,29 @@ pyreport serve reports/run-1
 
 ## GitHub Pages deploy
 
+Commits reports to the `gh-pages` branch. Each new PR adds a row to the root index page listing all runs. Old reports are never removed.
+
+> Setup: Settings → Pages → Source → **"Deploy from a branch"** → Branch: `gh-pages` / `/(root)`
+
 ```yaml
-- run: pytest --pyreport --pyreport-output "reports/${{ github.run_id }}"
-- uses: actions/upload-pages-artifact@v3
-  with: { path: reports }
-- uses: actions/deploy-pages@v4
+- run: |
+    pytest --pyreport --pyreport-output "_site/reports/${{ github.run_id }}/test-report"
+    python scripts/generate_demo.py --output "_site/reports/${{ github.run_id }}/demo"
+- run: python scripts/deploy_reports.py --site _site --gh-pages _gh-pages
+- uses: peaceiris/actions-gh-pages@v4
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    publish_dir: ./_site
+    publish_branch: gh-pages
 ```
 
-Each run gets a unique URL: `https://<user>.github.io/<repo>/reports/<run-id>/` — no overwrites.
+After deploy:
+
+```
+https://<user>.github.io/<repo/>                         ← all runs index
+https://<user>.github.io/<repo>/reports/<run-id>/demo/
+https://<user>.github.io/<repo>/reports/<run-id>/test-report/
+```
 
 ## Demo
 
