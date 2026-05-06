@@ -99,10 +99,17 @@ def main() -> None:
     # Merge existing reports from gh-pages into site
     if gh_pages.is_dir():
         for item in gh_pages.iterdir():
-            if item.name in (".git",):
+            if item.name == ".git":
                 continue
             dst = site / item.name
-            if not dst.exists():
+            if item.name == "reports":
+                # Merge individual runs inside reports/, not the whole dir
+                dst.mkdir(parents=True, exist_ok=True)
+                for run_dir in item.iterdir():
+                    run_dst = dst / run_dir.name
+                    if not run_dst.exists():
+                        shutil.copytree(run_dir, run_dst)
+            elif not dst.exists():
                 if item.is_dir():
                     shutil.copytree(item, dst)
                 else:
