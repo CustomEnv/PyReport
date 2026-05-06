@@ -349,9 +349,11 @@ function renderTests() {
           </div>
         ` : ''}
         ${t.attachments && t.attachments.length ? `
-          <div class="flex gap-2 flex-wrap">
+          <div class="flex flex-wrap gap-2">
             ${t.attachments.map(a =>
-              `<a href="${escapeHtml(a.path)}" class="px-2 py-1 bg-gray-800 rounded text-blue-400 hover:text-blue-300 text-xs" target="_blank">${escapeHtml(a.name)}</a>`
+              a.mime_type && a.mime_type.startsWith('image/')
+                ? `<img src="${escapeHtml(a.path)}" alt="${escapeHtml(a.name)}" class="max-w-xs max-h-48 rounded border border-gray-700 cursor-pointer hover:opacity-90" onclick="window.open(this.src,'_blank')" title="${escapeHtml(a.name)}">`
+                : `<a href="${escapeHtml(a.path)}" class="px-2 py-1 bg-gray-800 rounded text-blue-400 hover:text-blue-300 text-xs" target="_blank">${escapeHtml(a.name)}</a>`
             ).join('')}
           </div>
         ` : ''}

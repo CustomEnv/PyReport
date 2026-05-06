@@ -368,16 +368,15 @@ def deploy(
         for run_dir in sorted(reports_root.iterdir()):
             if not run_dir.is_dir():
                 continue
-            run_history = run_dir / ".pyreport_history"
-            if run_history.is_dir():
-                for item in run_history.iterdir():
+            # history may be nested inside test-report/ or demo/ subdirs
+            for hist_path in run_dir.rglob(".pyreport_history"):
+                if not hist_path.is_dir():
+                    continue
+                for item in hist_path.iterdir():
                     if item.is_file() and item.suffix == ".json":
                         dst = history_dir / item.name
-                        if not dst.exists():
-                            history_dir.mkdir(parents=True, exist_ok=True)
-                            shutil.copy2(item, dst)
-                # Remove per-run history (now at shared location)
-                shutil.rmtree(run_history)
+                        history_dir.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(item, dst)
 
     # Rebuild index.json from merged history
     if history_dir.is_dir():
