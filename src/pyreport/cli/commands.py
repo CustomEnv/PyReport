@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import typer
@@ -183,6 +185,176 @@ def serve(
         server.serve_forever()
     except KeyboardInterrupt:
         server.shutdown()
+
+
+# ── deploy ─────────────────────────────────────────────────────────────────
+
+
+def _discover_runs(
+    reports_dir: Path,
+) -> list[tuple[str, str, bool, bool, int | None, str | None, str | None]]:
+    """Return sorted (run_id, ts, has_demo, has_tests, pr, repo, run) list."""
+    if not reports_dir.is_dir():
+        return []
+    runs: list[tuple[str, str, bool, bool, int | None, str | None, str | None]] = []
+    for child in sorted(reports_dir.iterdir()):
+        if not child.is_dir():
+            continue
+        demo = (child / "demo" / "index.html").is_file()
+        tests = (child / "test-report" / "index.html").is_file()
+        if not (demo or tests):
+            continue
+
+        meta_file = child / ".meta.json"
+        pr: int | None = None
+        repo: str | None = None
+        run: str | None = None
+        ts: str | None = None
+        if meta_file.is_file():
+            try:
+                meta = json.loads(meta_file.read_text())
+                pr = meta.get("pr")
+                repo = meta.get("repo")
+                run = str(meta["run"]) if "run" in meta else None
+                raw_ts = meta.get("ts")
+                if raw_ts:
+                    ts = raw_ts
+            except Exception:
+                pass
+
+        if not ts:
+            ts = datetime.fromtimestamp(
+                child.stat().st_mtime, tz=timezone.utc
+            ).strftime("%Y-%m-%d %H:%M UTC")
+
+        runs.append((child.name, ts, demo, tests, pr, repo, run))
+    runs.sort(key=lambda r: r[1], reverse=True)
+    return runs
+
+
+def _generate_index(
+    runs: list[tuple[str, str, bool, bool, int | None, str | None, str | None]],
+) -> str:
+    rows: list[str] = []
+    for run_id, ts, has_demo, has_tests, pr, repo, run in runs:
+        link = "class='text-blue-400 hover:text-blue-300'"
+
+        run_cell: str
+        if run and repo:
+            run_cell = (
+                f"<a href='https://github.com/{repo}/actions/runs/{run}' {link}>"
+                f"{run}</a>"
+            )
+        elif run:
+            run_cell = run
+        else:
+            run_cell = run_id
+
+        pr_cell: str
+        if pr and repo:
+            pr_cell = f"<a href='https://github.com/{repo}/pull/{pr}' {link}>#{pr}</a>"
+        elif pr:
+            pr_cell = f"#{pr}"
+        else:
+            pr_cell = "<span class='text-gray-500'>\u2014</span>"
+
+        if has_demo:
+            demo = f"<a href='reports/{run_id}/demo/' {link}>demo</a>"
+        else:
+            demo = "<span class='text-gray-600'>\u2014</span>"
+        if has_tests:
+            tests = f"<a href='reports/{run_id}/test-report/' {link}>tests</a>"
+        else:
+            tests = "<span class='text-gray-600'>\u2014</span>"
+
+        rows.append(
+            f"<tr class='border-b border-gray-700 hover:bg-gray-750'>"
+            f"<td class='py-2 px-3 font-mono text-sm'>{run_cell}</td>"
+            f"<td class='py-2 px-3 text-sm text-gray-400'>{ts}</td>"
+            f"<td class='py-2 px-3'>{pr_cell}</td>"
+            f"<td class='py-2 px-3'>{demo}</td>"
+            f"<td class='py-2 px-3'>{tests}</td>"
+            f"</tr>"
+        )
+
+    return """<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PyReport \u2014 test runs</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.bg-gray-750{background-color:#2d2d3a}
+</style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-gray-800 rounded-lg p-5 mb-6 border border-gray-700">
+    <h1 class="text-xl font-bold">PyReport</h1>
+    <p class="text-sm text-gray-400 mt-1">test run history</p>
+  </div>
+  <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+    <table class="w-full">
+      <thead>
+        <tr class="text-left text-xs text-gray-400 uppercase tracking-wider
+                 border-b border-gray-700">
+          <th class="py-3 px-3">Run</th>
+          <th class="py-3 px-3">Date</th>
+          <th class="py-3 px-3">PR</th>
+          <th class="py-3 px-3">Demo</th>
+          <th class="py-3 px-3">Tests</th>
+        </tr>
+      </thead>
+      <tbody>
+""" + "\n".join(rows) + """      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>"""
+
+
+@app.command()
+def deploy(
+    site: str = typer.Argument(
+        ...,
+        help="_site directory with new reports",
+    ),
+    gh_pages: str = typer.Argument(
+        ...,
+        help="gh-pages branch checkout directory",
+    ),
+) -> None:
+    """Merge existing reports from gh-pages checkout into site and generate index."""
+    site_path = Path(site)
+    gh_path = Path(gh_pages)
+
+    if gh_path.is_dir():
+        for item in gh_path.iterdir():
+            if item.name == ".git":
+                continue
+            dst = site_path / item.name
+            if item.name == "reports":
+                dst.mkdir(parents=True, exist_ok=True)
+                for run_dir in item.iterdir():
+                    run_dst = dst / run_dir.name
+                    if not run_dst.exists():
+                        shutil.copytree(run_dir, run_dst)
+            elif not dst.exists():
+                if item.is_dir():
+                    shutil.copytree(item, dst)
+                else:
+                    shutil.copy2(item, dst)
+
+    all_runs = _discover_runs(site_path / "reports")
+    site_path.joinpath("index.html").write_text(_generate_index(all_runs))
+
+    ids = [r[0] for r in all_runs]
+    typer.echo(
+        f"Deploying {len(all_runs)} run(s): {(', '.join(ids) if ids else '(first run)')}"
+    )
 
 
 if __name__ == "__main__":
