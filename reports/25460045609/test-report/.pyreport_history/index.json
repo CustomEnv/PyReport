@@ -1,0 +1,13 @@
+[
+  {
+    "id": "20260506204400",
+    "timestamp": "2026-05-06T20:44:00.707754",
+    "total": 108,
+    "passed": 108,
+    "failed": 0,
+    "broken": 0,
+    "skipped": 0,
+    "pass_rate": 100.0,
+    "duration": 1.067
+  }
+]

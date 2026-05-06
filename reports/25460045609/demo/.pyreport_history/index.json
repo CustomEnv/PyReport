@@ -1,0 +1,35 @@
+[
+  {
+    "id": "demo-003",
+    "timestamp": "2026-05-04T14:00:00",
+    "total": 11,
+    "passed": 7,
+    "failed": 3,
+    "broken": 0,
+    "skipped": 1,
+    "pass_rate": 63.6,
+    "duration": 6.7
+  },
+  {
+    "id": "demo-002",
+    "timestamp": "2026-05-04T12:00:00",
+    "total": 11,
+    "passed": 8,
+    "failed": 2,
+    "broken": 0,
+    "skipped": 1,
+    "pass_rate": 72.7,
+    "duration": 5.9
+  },
+  {
+    "id": "demo-001",
+    "timestamp": "2026-05-04T10:00:00",
+    "total": 11,
+    "passed": 7,
+    "failed": 2,
+    "broken": 1,
+    "skipped": 1,
+    "pass_rate": 63.6,
+    "duration": 5.2
+  }
+]
