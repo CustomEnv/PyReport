@@ -393,6 +393,13 @@ def deploy(
         for p in runs_in_history:
             if p.name == "index.json":
                 continue
+            # Skip demo runs — they only clutter test history
+            if p.stem.startswith("demo-"):
+                try:
+                    p.unlink()
+                except OSError:
+                    pass
+                continue
             try:
                 data = json.loads(p.read_text())
                 stats = data.get("stats", {})
