@@ -27,32 +27,40 @@ def _generate_index(runs: list[tuple[str, float, bool, bool]]) -> str:
     rows = []
     for run_id, mtime, has_demo, has_tests in runs:
         ts = datetime.fromtimestamp(mtime, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-        demo = f"<a href='reports/{run_id}/demo/'>demo</a>" if has_demo else "—"
-        tests = f"<a href='reports/{run_id}/test-report/'>tests</a>" if has_tests else "—"
-        rows.append(f"<tr><td>{run_id}</td><td>{ts}</td><td>{demo}</td><td>{tests}</td></tr>")
+        demo = f"<a href='reports/{run_id}/demo/' class='text-blue-400 hover:text-blue-300'>demo</a>" if has_demo else "<span class='text-gray-600'>—</span>"
+        tests = f"<a href='reports/{run_id}/test-report/' class='text-blue-400 hover:text-blue-300'>tests</a>" if has_tests else "<span class='text-gray-600'>—</span>"
+        rows.append(f"<tr class='border-b border-gray-700 hover:bg-gray-750'><td class='py-2 px-3 font-mono text-sm'>{run_id}</td><td class='py-2 px-3 text-sm text-gray-400'>{ts}</td><td class='py-2 px-3'>{demo}</td><td class='py-2 px-3'>{tests}</td></tr>")
 
     return """<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PyReport — test runs</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}
-body{background:#0f172a;color:#e2e8f0}
-a{color:#60a5fa}
-table{width:100%;border-collapse:collapse;margin-top:20px}
-th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #334155}
-th{color:#94a3b8;font-size:.85em;text-transform:uppercase;letter-spacing:.05em}
-td{font-family:monospace;font-size:.9em}
-h1{font-size:1.5em;margin-bottom:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.bg-gray-750{background-color:#2d2d3a}
 </style>
 </head>
-<body>
-<h1>PyReport — test runs</h1>
-<table>
-<tr><th>Run</th><th>Date</th><th>Demo</th><th>Tests</th></tr>
-""" + "\n".join(rows) + "\n</table>\n</body>\n</html>\n"
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-gray-800 rounded-lg p-5 mb-6 border border-gray-700">
+    <h1 class="text-xl font-bold">PyReport</h1>
+    <p class="text-sm text-gray-400 mt-1">test run history</p>
+  </div>
+  <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+    <table class="w-full">
+      <thead><tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-700">
+        <th class="py-3 px-3">Run</th><th class="py-3 px-3">Date</th><th class="py-3 px-3">Demo</th><th class="py-3 px-3">Tests</th>
+      </tr></thead>
+      <tbody>""" + "\n".join(rows) + """</tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
+"""
 
 
 def main() -> None:
