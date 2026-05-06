@@ -38,7 +38,7 @@ Commits reports to the `gh-pages` branch. Each new PR adds a row to the root ind
 - run: |
     pytest --pyreport --pyreport-output "_site/reports/${{ github.run_id }}/test-report"
     python scripts/generate_demo.py --output "_site/reports/${{ github.run_id }}/demo"
-- run: python scripts/deploy_reports.py --site _site --gh-pages _gh-pages
+- run: pyreport deploy _site _gh-pages
 - uses: peaceiris/actions-gh-pages@v4
   with:
     github_token: ${{ secrets.GITHUB_TOKEN }}

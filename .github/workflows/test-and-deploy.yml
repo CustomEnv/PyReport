@@ -53,8 +53,7 @@ jobs:
       - name: Merge reports and generate index
         run: |
           mkdir -p _gh-pages
-          uv run python scripts/deploy_reports.py \
-            --site _site --gh-pages _gh-pages
+          uv run pyreport deploy _site _gh-pages
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
