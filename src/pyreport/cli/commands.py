@@ -372,6 +372,9 @@ def deploy(
             for hist_path in run_dir.rglob(".pyreport_history"):
                 if not hist_path.is_dir():
                     continue
+                # Only collect test-report history, skip demo
+                if "test-report" not in str(hist_path):
+                    continue
                 for item in hist_path.iterdir():
                     if item.is_file() and item.suffix == ".json":
                         dst = history_dir / item.name
