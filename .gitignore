@@ -220,3 +220,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# PyReport generated output
+pyreport-html/
+pyreport-history/
+pyreport-merged/
+pyreport-demo/

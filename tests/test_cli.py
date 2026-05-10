@@ -104,3 +104,108 @@ class TestGenerate:
         assert "test_a" in html
         assert "test_b" in html
         assert "fail" in html
+
+    def test_generate_with_embed_attachments(self, tmp_path: Path) -> None:
+        """generate --embed-attachments should not crash (no attachments to embed)."""
+        run = TestRun(
+            id="test-embed",
+            project="demo",
+            suites=[
+                TestSuite(
+                    id="s1", name="tests/test_demo.py", duration=0.5, status=Status.PASSED,
+                    tests=[
+                        TestCase(id="c1", name="test_ok", full_name="test_demo.py::test_ok",
+                                 duration=0.1, status=Status.PASSED),
+                    ],
+                ),
+            ],
+        )
+        run.compute_stats()
+        fixture = _make_fixture(tmp_path / "report.json", run)
+        out = tmp_path / "embedded"
+
+        result = runner.invoke(app, ["generate", str(fixture), "-o", str(out),
+                                     "--embed-attachments"])
+        assert result.exit_code == 0, result.output
+        assert (out / "index.html").exists()
+
+
+class TestHistory:
+    def test_history_no_directory(self, tmp_path: Path) -> None:
+        result = runner.invoke(app, ["history", str(tmp_path / "nonexistent")])
+        assert result.exit_code != 0
+        assert "Error" in result.output
+
+    def test_history_no_history_data(self, tmp_path: Path) -> None:
+        # Directory exists but has no .pyreport_history → generates empty page
+        out_dir = tmp_path / "output"
+        out_dir.mkdir(parents=True)
+        hist_out = tmp_path / "hist"
+        result = runner.invoke(app, ["history", str(out_dir), "-o", str(hist_out)])
+        assert result.exit_code == 0
+        assert hist_out.exists()
+
+    def test_history_with_data(self, tmp_path: Path) -> None:
+        # Setup: create a report and history
+        from pyreport.history.store import HistoryStore
+
+        run = TestRun(
+            id="run-001",
+            project="demo",
+            name="Test Run",
+            suites=[
+                TestSuite(
+                    id="s1", name="tests/test_api.py", duration=0.5, status=Status.PASSED,
+                    tests=[
+                        TestCase(id="c1", name="test_ok", full_name="test_api.py::test_ok",
+                                 test_id="test_api.py::test_ok",
+                                 duration=0.1, status=Status.PASSED),
+                        TestCase(id="c2", name="test_fail", full_name="test_api.py::test_fail",
+                                 test_id="test_api.py::test_fail",
+                                 duration=0.2, status=Status.FAILED, message="error"),
+                    ],
+                ),
+            ],
+        )
+        run.compute_stats()
+
+        out_dir = tmp_path / "reports"
+        store = HistoryStore(out_dir / ".pyreport_history")
+        store.save_run(run)
+
+        result = runner.invoke(app, ["history", str(out_dir)])
+        assert result.exit_code == 0, result.output
+        assert "Found 1 run(s) in history" in result.output
+        assert "run-001" in result.output
+
+    def test_history_generates_html(self, tmp_path: Path) -> None:
+        from pyreport.history.store import HistoryStore
+
+        run = TestRun(
+            id="run-001",
+            project="demo",
+            name="Test Run",
+            suites=[
+                TestSuite(
+                    id="s1", name="tests/test_api.py", duration=0.5, status=Status.PASSED,
+                    tests=[
+                        TestCase(id="c1", name="test_ok", full_name="test_api.py::test_ok",
+                                 test_id="test_api.py::test_ok",
+                                 duration=0.1, status=Status.PASSED),
+                    ],
+                ),
+            ],
+        )
+        run.compute_stats()
+
+        out_dir = tmp_path / "reports"
+        history_out = tmp_path / "history-out"
+        store = HistoryStore(out_dir / ".pyreport_history")
+        store.save_run(run)
+
+        result = runner.invoke(app, ["history", str(out_dir), "-o", str(history_out)])
+        assert result.exit_code == 0
+        assert (history_out / "history.html").exists()
+        html = (history_out / "history.html").read_text()
+        assert "Test History" in html
+        assert "run-001" in html

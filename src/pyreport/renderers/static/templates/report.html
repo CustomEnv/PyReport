@@ -31,6 +31,10 @@ tailwind.config = {
   .bg-status-failed { @apply bg-fail-bg border-fail-border; }
   .bg-status-skipped { @apply bg-skip-bg border-skip-border; }
   .bg-status-broken { @apply bg-broken-bg border-broken-border; }
+  .badge-passed { background-color: #16a34a; color: #fff; }
+  .badge-failed { background-color: #dc2626; color: #fff; }
+  .badge-broken { background-color: #ca8a04; color: #fff; }
+  .badge-skipped { background-color: #6b7280; color: #fff; }
   [data-status].active-filter { @apply ring-2 ring-offset-2 ring-offset-gray-900; }
   [data-status="passed"].active-filter { @apply ring-pass; }
   [data-status="failed"].active-filter { @apply ring-fail; }
@@ -136,6 +140,9 @@ tailwind.config = {
       </button>
       {% endfor %}
     </div>
+    <a href="history.html"
+       class="text-xs text-blue-400 hover:text-blue-300 border border-blue-800 px-3 py-1 rounded-full hover:bg-blue-900/30"
+       title="View test history across runs">History</a>
   </div>
 
   <!-- Content area -->
@@ -303,7 +310,7 @@ function renderTests() {
         <span class="w-2 h-2 rounded-full flex-shrink-0 status-${t.status} bg-current"></span>
         <span class="flex-1 text-sm font-medium">${escapeHtml(t.name)}</span>
         <span class="text-xs text-gray-500">${(t.duration || 0).toFixed(2)}s</span>
-        <span class="text-xs px-1.5 py-0.5 rounded status-${t.status} bg-current bg-opacity-10">${t.status}</span>
+        <span class="text-xs px-1.5 py-0.5 rounded badge-${t.status}">${t.status}</span>
       </div>
       <div class="test-details hidden border-t border-gray-700 px-4 py-3 bg-gray-900 text-xs space-y-3">
         <div class="text-gray-400">${escapeHtml(t.full_name)}</div>
@@ -342,9 +349,11 @@ function renderTests() {
           </div>
         ` : ''}
         ${t.attachments && t.attachments.length ? `
-          <div class="flex gap-2 flex-wrap">
+          <div class="flex flex-wrap gap-2">
             ${t.attachments.map(a =>
-              `<a href="${escapeHtml(a.path)}" class="px-2 py-1 bg-gray-800 rounded text-blue-400 hover:text-blue-300 text-xs" target="_blank">${escapeHtml(a.name)}</a>`
+              a.mime_type && a.mime_type.startsWith('image/')
+                ? `<img src="${escapeHtml(a.path)}" alt="${escapeHtml(a.name)}" class="max-w-xs max-h-48 rounded border border-gray-700 cursor-pointer hover:opacity-90" onclick="window.open(this.src,'_blank')" title="${escapeHtml(a.name)}">`
+                : `<a href="${escapeHtml(a.path)}" class="px-2 py-1 bg-gray-800 rounded text-blue-400 hover:text-blue-300 text-xs" target="_blank">${escapeHtml(a.name)}</a>`
             ).join('')}
           </div>
         ` : ''}

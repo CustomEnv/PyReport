@@ -16,6 +16,7 @@ from pyreport.core import (
     TestSuite,
     model_to_dict,
 )
+from pyreport.history.store import HistoryStore
 from pyreport.renderers.static.html_renderer import HTMLRenderer
 
 
@@ -131,6 +132,7 @@ class PyReportPlugin:
             id=node_id,
             name=item.name,
             full_name=node_id,
+            test_id=node_id.split("[")[0],  # stable id without params
             duration=getattr(report, "duration", 0.0),
             status=status,
             message=message,
@@ -220,6 +222,13 @@ class PyReportPlugin:
         # Write JSON
         json_path = self.output_dir / "report.json"
         json_path.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+
+        # Save to history store
+        try:
+            store = HistoryStore(self.output_dir / ".pyreport_history")
+            store.save_run(run)
+        except Exception:  # noqa: BLE001
+            pass  # non-blocking — should not break test run
 
         # Write HTML
         try:

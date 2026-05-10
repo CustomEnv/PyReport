@@ -8,7 +8,10 @@ from pathlib import Path
 
 import typer
 
+from pyreport.analyzers.flaky import detect_flaky
+from pyreport.analyzers.trends import analyze_duration, get_slowest_tests
 from pyreport.core import TestRun
+from pyreport.history.store import HistoryStore
 from pyreport.renderers.static.html_renderer import HTMLRenderer
 
 app = typer.Typer(
@@ -46,6 +49,7 @@ def _model_from_dict(data: dict) -> TestRun:
                 parameters=td.get("parameters", {}),
                 tags=td.get("tags", []),
                 attachments=atts,
+                test_id=td.get("test_id", ""),
                 stdout=td.get("stdout"),
                 stderr=td.get("stderr"),
                 log=td.get("log"),
@@ -86,6 +90,11 @@ def generate(
         "--output", "-o",
         help="Output directory for HTML report",
     ),
+    embed_attachments: bool = typer.Option(
+        False,
+        "--embed-attachments",
+        help="Embed small attachments (<100KB) as base64 data URIs",
+    ),
 ) -> None:
     """Generate an HTML report from a JSON report file."""
     src = Path(input_path)
@@ -97,7 +106,8 @@ def generate(
     run = _model_from_dict(data)
     out = Path(output_dir)
     renderer = HTMLRenderer()
-    index = renderer.render(run, out)
+    index = renderer.render(run, out, embed_attachments=embed_attachments,
+                            source_dir=src.parent)
     typer.echo(f"Report generated: {index}")
 
 
@@ -351,10 +361,152 @@ def deploy(
     all_runs = _discover_runs(site_path / "reports")
     site_path.joinpath("index.html").write_text(_generate_index(all_runs))
 
+    # ── Persist .pyreport_history ──────────────────────────────────────────
+    history_dir = site_path / ".pyreport_history"
+    reports_root = site_path / "reports"
+    if reports_root.is_dir():
+        for run_dir in sorted(reports_root.iterdir()):
+            if not run_dir.is_dir():
+                continue
+            # history may be nested inside test-report/ or demo/ subdirs
+            for hist_path in run_dir.rglob(".pyreport_history"):
+                if not hist_path.is_dir():
+                    continue
+                # Only collect test-report history, skip demo
+                if "test-report" not in str(hist_path):
+                    continue
+                for item in hist_path.iterdir():
+                    if item.is_file() and item.suffix == ".json":
+                        dst = history_dir / item.name
+                        history_dir.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(item, dst)
+
+    # Rebuild index.json from merged history
+    if history_dir.is_dir():
+        # Re-merge all run files into a clean index
+        runs_in_history = sorted(
+            history_dir.glob("*.json"),
+            key=lambda p: p.stat().st_mtime, reverse=True,
+        )
+        index_path = history_dir / "index.json"
+        entries = []
+        for p in runs_in_history:
+            if p.name == "index.json":
+                continue
+            # Skip demo runs — they only clutter test history
+            if p.stem.startswith("demo-"):
+                try:
+                    p.unlink()
+                except OSError:
+                    pass
+                continue
+            try:
+                data = json.loads(p.read_text())
+                stats = data.get("stats", {})
+                entries.append({
+                    "id": data.get("id", p.stem),
+                    "timestamp": data.get("timestamp", ""),
+                    "total": stats.get("total", 0),
+                    "passed": stats.get("passed", 0),
+                    "failed": stats.get("failed", 0),
+                    "broken": stats.get("broken", 0),
+                    "skipped": stats.get("skipped", 0),
+                    "pass_rate": stats.get("pass_rate", 0.0),
+                    "duration": data.get("duration", 0.0),
+                })
+            except Exception:
+                pass
+        entries.sort(key=lambda r: r["timestamp"], reverse=True)
+        index_path.write_text(json.dumps(entries, indent=2))
+        typer.echo(f"History: {len(entries)} run(s) in {history_dir}")
+
     ids = [r[0] for r in all_runs]
     typer.echo(
         f"Deploying {len(all_runs)} run(s): {(', '.join(ids) if ids else '(first run)')}"
     )
+
+
+@app.command()
+def history(
+    reports_dir: str = typer.Argument(
+        ...,
+        help="Directory containing a PyReport output with history",
+    ),
+    output_dir: str = typer.Option(
+        "pyreport-history",
+        "--output", "-o",
+        help="Output directory for history HTML report",
+    ),
+) -> None:
+    """Show history of test runs with flaky detection and duration trends."""
+    reports_path = Path(reports_dir)
+    if not reports_path.is_dir():
+        typer.echo(f"Error: directory not found: {reports_path}", err=True)
+        raise typer.Exit(code=1)
+
+    # Discover the history directory — look for .pyreport_history/ subdir or reports_dir itself
+    history_path = reports_path / ".pyreport_history"
+    if not history_path.is_dir():
+        typer.echo(
+            f"Warning: no history found in {reports_path}. "
+            "Generating empty history page.",
+            err=True,
+        )
+        renderer = HTMLRenderer()
+        out = Path(output_dir)
+        history_index = renderer.render_history(output_dir=out)
+        typer.echo(f"History report generated (empty): {history_index}")
+        raise typer.Exit()
+
+    store = HistoryStore(history_path)
+    runs = store.list_runs()
+    if not runs:
+        typer.echo("Warning: no runs found in history. Generating empty history page.", err=True)
+        renderer = HTMLRenderer()
+        out = Path(output_dir)
+        history_index = renderer.render_history(output_dir=out)
+        typer.echo(f"History report generated (empty): {history_index}")
+        raise typer.Exit()
+
+    typer.echo(f"Found {len(runs)} run(s) in history.")
+
+    # Flaky detection
+    flaky_tests = detect_flaky(store)
+    if flaky_tests:
+        typer.echo(f"\nFlaky tests ({len(flaky_tests)} found):")
+        for ft in flaky_tests[:5]:
+            typer.echo(f"  {ft.name} — score: {ft.flaky_score}, "
+                       f"changes: {ft.status_changes}/{ft.total_runs}")
+
+    # Duration trends
+    trends = analyze_duration(store)
+    if trends:
+        typer.echo(f"\nDuration trends ({len(trends)} tests tracked):")
+        for t in trends[:5]:
+            change = f" ({t.change_pct:+.1f}%)" if t.change_pct is not None else ""
+            typer.echo(f"  {t.name} — latest: {t.latest_duration:.2f}s, "
+                       f"avg: {t.avg_duration:.2f}s{change}")
+
+    # Slowest tests in the latest run
+    latest_run = store.load_run(runs[0]["id"])
+    if latest_run:
+        slowest = get_slowest_tests(latest_run, 5)
+        typer.echo(f"\nSlowest tests in latest run ({runs[0]['id']}):")
+        for t in slowest:
+            typer.echo(f"  {t.name} — {t.duration:.2f}s [{t.status.value}]")
+
+    # Generate history HTML
+    out = Path(output_dir)
+    renderer = HTMLRenderer()
+    slowest = get_slowest_tests(latest_run, 5) if latest_run else []
+    history_index = renderer.render_history(
+        flaky_tests=flaky_tests,
+        trends=trends,
+        output_dir=out,
+        run_meta_list=runs,
+        slowest_tests=slowest,
+    )
+    typer.echo(f"\nHistory report generated: {history_index}")
 
 
 if __name__ == "__main__":
